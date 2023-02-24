@@ -5,7 +5,7 @@ async function getHTML(url: string) {
 	try {
 		// Fetches with a timeout to avoid waiting for nothing
 		// Type issue: https://github.com/node-fetch/node-fetch/issues/1652
-		const signal = AbortSignal.timeout(2000) as any
+		const signal = AbortSignal.timeout(3000) as any
 		const response = await fetch(url, { signal })
 
 		if (response.status === 200) {
@@ -29,6 +29,8 @@ function getIconPathFromHTML(html: string) {
 		onopentag(name, attributes) {
 			if (name !== 'link') return
 
+			// console.log(attributes)
+
 			const { rel, href } = attributes
 
 			if (rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g)) {
@@ -51,9 +53,16 @@ function getIconPathFromHTML(html: string) {
 function toAbsolutePath(url: string, query: string) {
 	const { hostname, protocol, pathname } = new URL(query)
 
+	if (url === '') return url
+
+	// It means (https:)//
+	if (url.startsWith('//')) {
+		url = `${protocol}${url}`
+	}
+
 	// If icon from root, only add protocol & hostname
 	// Absolute path, also gets pathname
-	if (url !== '' && !url.startsWith('http')) {
+	if (!url.startsWith('http')) {
 		url = `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname + '/'}${url}`
 	}
 
@@ -68,7 +77,7 @@ async function isIconFetchable(url: string) {
 		}
 	} catch (error) {
 		console.warn("Couldn't verify icon")
-		// console.error(error)
+		console.error(error)
 		return false
 	}
 
