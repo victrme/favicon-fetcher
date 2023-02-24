@@ -1,0 +1,5 @@
+.netlify
+functions/package-lock.json
+functions/pnpm-lock.yaml
+functions/yarn.lock
+functions/node_modules/
