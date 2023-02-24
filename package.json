@@ -2,7 +2,7 @@
 	"name": "favicon-fetcher",
 	"version": "1.0.0",
 	"description": "",
-	"main": "favicon.js",
+	"main": "get.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
