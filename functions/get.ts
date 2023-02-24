@@ -1,5 +1,6 @@
 import fetch from 'node-fetch'
 import * as htmlparser2 from 'htmlparser2'
+import websites from '../assets/websites.json'
 
 async function getHTML(url: string) {
 	try {
@@ -50,6 +51,17 @@ function getIconPathFromHTML(html: string) {
 	return icon
 }
 
+function getURLFromWebsiteList(query: string) {
+	let url = ''
+
+	websites.forEach((website) => {
+		if (query.includes(website.domain)) {
+			url = website.url
+		}
+	})
+	return url
+}
+
 function toAbsolutePath(url: string, query: string) {
 	const { hostname, protocol, pathname } = new URL(query)
 
@@ -91,6 +103,7 @@ export async function handler(event: any) {
 
 	res = getIconPathFromHTML(html)
 	res = toAbsolutePath(res, query)
+	res = getURLFromWebsiteList(query)
 	res = (await isIconFetchable(res)) ? res : ''
 
 	if (res === '') {
