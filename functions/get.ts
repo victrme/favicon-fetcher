@@ -51,14 +51,13 @@ function getIconPathFromHTML(html: string) {
 	return icon
 }
 
-function getURLFromWebsiteList(query: string) {
-	let url = ''
-
+function getURLFromWebsiteList(url: string, query: string) {
 	websites.forEach((website) => {
 		if (query.includes(website.domain)) {
 			url = website.url
 		}
 	})
+
 	return url
 }
 
@@ -103,7 +102,7 @@ export async function handler(event: any) {
 
 	res = getIconPathFromHTML(html)
 	res = toAbsolutePath(res, query)
-	res = getURLFromWebsiteList(query)
+	res = getURLFromWebsiteList(res, query)
 	res = (await isIconFetchable(res)) ? res : ''
 
 	if (res === '') {
