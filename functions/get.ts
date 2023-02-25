@@ -2,6 +2,24 @@ import fetch from 'node-fetch'
 import * as htmlparser2 from 'htmlparser2'
 import websites from '../assets/websites.json'
 
+function stringToURL(str: string) {
+	try {
+		return new URL(str)
+	} catch (error) {
+		console.error('Query is not valid')
+	}
+}
+
+function getURLFromWebsiteList(url: string, query: string) {
+	websites.forEach((website) => {
+		if (query.includes(website.domain)) {
+			url = website.url
+		}
+	})
+
+	return url
+}
+
 async function getHTML(url: string) {
 	try {
 		// Fetches with a timeout to avoid waiting for nothing
@@ -31,7 +49,6 @@ function getIconPathFromHTML(html: string) {
 			if (name !== 'link') return
 
 			// console.log(attributes)
-
 			const { rel, href } = attributes
 
 			if (rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g)) {
@@ -49,16 +66,6 @@ function getIconPathFromHTML(html: string) {
 	parser.end()
 
 	return icon
-}
-
-function getURLFromWebsiteList(url: string, query: string) {
-	websites.forEach((website) => {
-		if (query.includes(website.domain)) {
-			url = website.url
-		}
-	})
-
-	return url
 }
 
 function toAbsolutePath(url: string, query: string) {
@@ -81,32 +88,45 @@ function toAbsolutePath(url: string, query: string) {
 }
 
 async function isIconFetchable(url: string) {
+	if (!stringToURL(url)) {
+		return false
+	}
+
 	try {
 		const response = await fetch(url)
-		if (response.status !== 200) {
-			return false
+		if (response.status === 200) {
+			return true
 		}
 	} catch (error) {
 		console.warn("Couldn't verify icon")
 		console.error(error)
-		return false
 	}
 
-	return true
+	return false
 }
 
 export async function handler(event: any) {
 	const query = event.path.replace('/get/', '')
-	const html = await getHTML(query)
 	let res = ''
 
-	res = getIconPathFromHTML(html)
-	res = toAbsolutePath(res, query)
 	res = getURLFromWebsiteList(res, query)
-	res = (await isIconFetchable(res)) ? res : ''
 
+	// Fetch html links only if it is not found in list
+	if (res === '' && stringToURL(query)) {
+		const html = await getHTML(query)
+		res = getIconPathFromHTML(html)
+		res = toAbsolutePath(res, query)
+	}
+
+	// Validate icon url
+	if ((await isIconFetchable(res)) === false) {
+		res = ''
+	}
+
+	// Fallback
 	if (res === '') {
-		res = 'https://icons.duckduckgo.com/ip3/' + new URL(query).hostname + '.ico'
+		const URL = stringToURL(query)
+		res = 'https://icons.duckduckgo.com/ip3/' + URL?.hostname + '.ico'
 	}
 
 	return {
