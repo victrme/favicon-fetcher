@@ -40,16 +40,20 @@ async function getHTML(url: string) {
 	return '<nothing />'
 }
 
-function getIconPathFromHTML(html: string) {
+async function getIconPathFromHTML(html: string) {
 	let hasTouchIcon = false
+	let manifestPath = ''
 	let icon = ''
 
 	const parser = new htmlparser2.Parser({
 		onopentag(name, attributes) {
 			if (name !== 'link') return
 
-			// console.log(attributes)
 			const { rel, href } = attributes
+
+			if (rel?.toLocaleLowerCase() === 'manifest') {
+				manifestPath = href
+			}
 
 			if (rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g)) {
 				hasTouchIcon = true
@@ -64,6 +68,12 @@ function getIconPathFromHTML(html: string) {
 
 	parser.write(html)
 	parser.end()
+
+	if (manifestPath !== '' && !hasTouchIcon) {
+		const manifest = await fetch(manifestPath)
+		const json = await manifest.json()
+		icon = json.icons[0]?.src || icon
+	}
 
 	return icon
 }
@@ -114,7 +124,7 @@ export async function handler(event: any) {
 	// Fetch html links only if it is not found in list
 	if (res === '' && stringToURL(query)) {
 		const html = await getHTML(query)
-		res = getIconPathFromHTML(html)
+		res = await getIconPathFromHTML(html)
 		res = toAbsolutePath(res, query)
 	}
 
