@@ -6,7 +6,7 @@ function stringToURL(str: string) {
 	try {
 		return new URL(str)
 	} catch (error) {
-		console.error('Query is not valid')
+		console.error('Query is not valid: ', str)
 	}
 }
 
@@ -40,28 +40,59 @@ async function getHTML(url: string) {
 	return '<nothing />'
 }
 
-async function getIconPathFromHTML(html: string) {
-	let hasTouchIcon = false
-	let manifestPath = ''
-	let icon = ''
+async function getManifest(path: string) {
+	try {
+		const manifest = await fetch(path)
+		const json = await manifest.json()
+		return json
+	} catch (error) {
+		console.log('Couldnt get manifest')
+	}
+}
+
+function parseManifest(json?: { icons?: { src: string; sizes: string }[] }) {
+	if (json?.icons) {
+		const icons = json.icons.map((ico) => {
+			return {
+				href: ico.src,
+				size: parseInt(ico.sizes?.split('x')[0]) || 0,
+			}
+		})
+
+		return icons.sort((a, b) => b.size - a.size)[0].href
+	}
+
+	return ''
+}
+
+function parseHTMLHead(html: string) {
+	let result = {
+		manifest: '',
+		icons: [
+			{
+				href: '/favicon.ico',
+				size: 16,
+				touch: false,
+			},
+		],
+	}
 
 	const parser = new htmlparser2.Parser({
 		onopentag(name, attributes) {
 			if (name !== 'link') return
 
-			const { rel, href } = attributes
+			const { rel, href, sizes } = attributes
 
 			if (rel?.toLocaleLowerCase() === 'manifest') {
-				manifestPath = href
+				result.manifest = href
 			}
 
-			if (rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g)) {
-				hasTouchIcon = true
-				icon = href
-			}
-
-			if (rel?.toLocaleLowerCase().match(/icon|shortcut icon/g) && !hasTouchIcon) {
-				icon = href
+			if (rel?.toLocaleLowerCase().includes('icon')) {
+				result.icons.push({
+					href,
+					size: parseInt(sizes?.split('x')[0]) || 0,
+					touch: !!rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g),
+				})
 			}
 		},
 	})
@@ -69,16 +100,10 @@ async function getIconPathFromHTML(html: string) {
 	parser.write(html)
 	parser.end()
 
-	if (manifestPath !== '' && !hasTouchIcon) {
-		const manifest = await fetch(manifestPath)
-		const json = await manifest.json()
-		icon = json.icons[0]?.src || icon
-	}
-
-	return icon
+	return result
 }
 
-function toAbsolutePath(url: string, query: string) {
+function createFullPath(url: string, query: string) {
 	const { hostname, protocol, pathname } = new URL(query)
 
 	if (url === '') return url
@@ -116,34 +141,69 @@ async function isIconFetchable(url: string) {
 }
 
 export async function handler(event: any) {
-	const query = event.path.replace('/get/', '')
-	let res = ''
-
-	res = getURLFromWebsiteList(res, query)
-
-	// Fetch html links only if it is not found in list
-	if (res === '' && stringToURL(query)) {
-		const html = await getHTML(query)
-		res = await getIconPathFromHTML(html)
-		res = toAbsolutePath(res, query)
-	}
-
-	// Validate icon url
-	if ((await isIconFetchable(res)) === false) {
-		res = ''
-	}
-
-	// Fallback
-	if (res === '') {
-		const URL = stringToURL(query)
-		res = 'https://icons.duckduckgo.com/ip3/' + URL?.hostname + '.ico'
-	}
-
-	return {
+	const response = {
 		statusCode: 200,
-		body: res,
+		body: '',
 		headers: {
 			'access-control-allow-origin': '*',
 		},
+	}
+
+	const query = event.path.replace('/get/', '')
+	let res = ''
+
+	// Is locahost
+	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
+		return { ...response, body: 'data:svg/islocalhost' }
+	}
+
+	// Website is in list
+	res = getURLFromWebsiteList(res, query)
+	if (res.length > 0) {
+		return { ...response, body: res }
+	}
+
+	// Fetch from website
+	if (stringToURL(query)) {
+		const html = await getHTML(query)
+		const { manifest, icons } = parseHTMLHead(html)
+
+		// Is there a touch icon ?
+		if (icons.some((ico) => ico.touch)) {
+			res = icons.filter((ico) => ico.touch)[0].href
+		}
+
+		// Is manifest available ?
+		else if (manifest.length > 0) {
+			const path = createFullPath(manifest, query)
+			const json = await getManifest(path)
+			res = parseManifest(json)
+		}
+
+		// Is there another icon ?
+		else if (icons.length > 0) {
+			res = icons.sort((a, b) => b.size - a.size)[0].href
+		}
+
+		res = createFullPath(res, query)
+
+		// Validate icon url
+		if (await isIconFetchable(res)) {
+			return { ...response, body: res }
+		}
+	}
+
+	// Fallback
+	const URL = stringToURL(query)
+	res = `${URL?.protocol || 'http:'}//${URL?.hostname}/favicon.ico`
+
+	// Validate icon url
+	if (await isIconFetchable(res)) {
+		return { ...response, body: res }
+	}
+
+	return {
+		...response,
+		body: 'data:svg/isnotfound',
 	}
 }
