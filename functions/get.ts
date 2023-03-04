@@ -1,22 +1,41 @@
 import fetch from 'node-fetch'
 import * as htmlparser2 from 'htmlparser2'
 import websites from '../assets/websites.json'
-import { isnotfound, localhost } from '../assets/icons';
+import { isnotfound, localhost } from '../assets/icons'
+
+type Icon = {
+	href: string
+	size: number
+	touch?: boolean
+}
+
+type Manifest = {
+	icons?: {
+		src: string
+		sizes: string
+	}[]
+}
 
 function stringToURL(str: string) {
 	try {
 		return new URL(str)
 	} catch (error) {
-		console.error('Query is not valid: ', str)
+		console.warn('Query is not valid: ', str)
 	}
 }
 
-function getURLFromWebsiteList(url: string, query: string) {
-	for (let i = 0; i < websites.length; i++) {
-		if (query.includes(websites[i].domain)) {
-			return websites[i].url
+function sortClosestToSize(icons: Icon[], val = 144) {
+	return icons.sort((a, b) => Math.abs(a.size - val) - Math.abs(b.size - val))
+}
+
+function getURLFromWebsiteList(query: string) {
+	websites.forEach((website) => {
+		if (query.includes(website.domain)) {
+			return website.url
 		}
-	} return '';
+	})
+
+	return ''
 }
 
 async function getHTML(url: string) {
@@ -32,7 +51,6 @@ async function getHTML(url: string) {
 		}
 	} catch (error) {
 		console.warn('Website loaded for too long')
-		console.error(error)
 	}
 
 	console.warn("Couldn't get html")
@@ -45,27 +63,22 @@ async function getManifest(path: string) {
 		const json = await manifest.json()
 		return json
 	} catch (error) {
-		console.log('Couldnt get manifest')
+		console.warn('Couldnt get manifest')
+		return {}
 	}
 }
 
-function parseManifest(json?: { icons?: { src: string; sizes: string }[] }) {
-	if (json?.icons) {
-		const icons = json.icons.map((ico) => {
-			return {
-				href: ico.src,
-				size: parseInt(ico.sizes?.split('x')[0]) || 0,
-			}
-		})
+function parseManifest(json: Manifest): Icon[] {
+	if (!json?.icons) return []
 
-		return icons.sort((a, b) => b.size - a.size)[0].href
-	}
-
-	return ''
+	return json.icons.map((ico) => ({
+		href: ico.src,
+		size: parseInt(ico.sizes?.split('x')[0]) || 48,
+	}))
 }
 
 function parseHTMLHead(html: string) {
-	let result = {
+	let result: { manifest: string; icons: Icon[] } = {
 		manifest: '',
 		icons: [
 			{
@@ -89,7 +102,7 @@ function parseHTMLHead(html: string) {
 			if (rel?.toLocaleLowerCase().includes('icon')) {
 				result.icons.push({
 					href,
-					size: parseInt(sizes?.split('x')[0]) || 0,
+					size: parseInt(sizes?.split('x')[0]) || 48,
 					touch: !!rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g),
 				})
 			}
@@ -133,7 +146,6 @@ async function isIconFetchable(url: string) {
 		}
 	} catch (error) {
 		console.warn("Couldn't verify icon")
-		console.error(error)
 	}
 
 	return false
@@ -157,7 +169,7 @@ export async function handler(event: any) {
 	}
 
 	// Website is in list
-	res = getURLFromWebsiteList(res, query)
+	res = getURLFromWebsiteList(query)
 	if (res.length > 0) {
 		return { ...response, body: res }
 	}
@@ -165,26 +177,28 @@ export async function handler(event: any) {
 	// Fetch from website
 	if (stringToURL(query)) {
 		const html = await getHTML(query)
-		const { manifest, icons } = parseHTMLHead(html)
+		let { manifest, icons } = parseHTMLHead(html)
 
 		// Is there a touch icon ?
 		if (icons.some((ico) => ico.touch)) {
+			icons = sortClosestToSize(icons)
 			res = icons.filter((ico) => ico.touch)[0].href
+			res = createFullPath(res, query)
+
+			if (await isIconFetchable(res)) {
+				return { ...response, body: res }
+			}
 		}
 
 		// Is manifest available ?
 		else if (manifest.length > 0) {
 			const path = createFullPath(manifest, query)
 			const json = await getManifest(path)
-			res = parseManifest(json as any)
+			icons = icons.concat(parseManifest(json as Manifest))
 		}
 
-		// Is there another icon ?
-		else if (icons.length > 0) {
-			res = icons.sort((a, b) => b.size - a.size)[0].href
-		}
-
-		res = createFullPath(res, query)
+		icons = sortClosestToSize(icons)
+		res = createFullPath(icons[0]?.href, query)
 
 		// Validate icon url
 		if (await isIconFetchable(res)) {
