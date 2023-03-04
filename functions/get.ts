@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 import * as htmlparser2 from 'htmlparser2'
 import websites from '../assets/websites.json'
+import { isnotfound, localhost } from '../assets/icons';
 
 function stringToURL(str: string) {
 	try {
@@ -11,13 +12,11 @@ function stringToURL(str: string) {
 }
 
 function getURLFromWebsiteList(url: string, query: string) {
-	websites.forEach((website) => {
-		if (query.includes(website.domain)) {
-			url = website.url
+	for (let i = 0; i < websites.length; i++) {
+		if (query.includes(websites[i].domain)) {
+			return websites[i].url
 		}
-	})
-
-	return url
+	} return '';
 }
 
 async function getHTML(url: string) {
@@ -154,7 +153,7 @@ export async function handler(event: any) {
 
 	// Is locahost
 	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
-		return { ...response, body: 'data:svg/islocalhost' }
+		return { ...response, body: localhost }
 	}
 
 	// Website is in list
@@ -177,7 +176,7 @@ export async function handler(event: any) {
 		else if (manifest.length > 0) {
 			const path = createFullPath(manifest, query)
 			const json = await getManifest(path)
-			res = parseManifest(json)
+			res = parseManifest(json as any)
 		}
 
 		// Is there another icon ?
@@ -202,8 +201,5 @@ export async function handler(event: any) {
 		return { ...response, body: res }
 	}
 
-	return {
-		...response,
-		body: 'data:svg/isnotfound',
-	}
+	return { ...response, body: isnotfound }
 }
