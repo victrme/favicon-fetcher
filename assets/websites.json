@@ -8,6 +8,10 @@
 		"url": "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
 	},
 	{
+		"domain": "gmail.com",
+		"url": "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
+	},
+	{
 		"domain": "google.com",
 		"url": "https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png"
 	},
