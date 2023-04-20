@@ -42,7 +42,7 @@ async function getHTML(url: string) {
 	try {
 		// Fetches with a timeout to avoid waiting for nothing
 		// Type issue: https://github.com/node-fetch/node-fetch/issues/1652
-		const signal = AbortSignal.timeout(3000) as any
+		const signal = AbortSignal.timeout(4000) as any
 		const response = await fetch(url, { signal })
 
 		if (response.status === 200) {
@@ -50,11 +50,11 @@ async function getHTML(url: string) {
 			return html
 		}
 	} catch (error) {
-		console.warn('Website loaded for too long')
+		console.warn("Can't get HTML: ")
+		console.warn((error as Error)?.message)
 	}
 
-	console.warn("Couldn't get html")
-	return '<nothing />'
+	return null
 }
 
 async function getManifest(path: string) {
@@ -140,12 +140,15 @@ async function isIconFetchable(url: string) {
 	}
 
 	try {
-		const response = await fetch(url)
+		const signal = AbortSignal.timeout(2500) as any
+		const response = await fetch(url, { signal })
+
 		if (response.status === 200) {
 			return true
 		}
 	} catch (error) {
 		console.warn("Couldn't verify icon")
+		console.warn((error as Error)?.message)
 	}
 
 	return false
@@ -161,6 +164,7 @@ export async function handler(event: any) {
 	}
 
 	const query = event.path.replace('/get/', '')
+	let html: string | null = null
 	let res = ''
 
 	// Is locahost
@@ -176,7 +180,10 @@ export async function handler(event: any) {
 
 	// Fetch from website
 	if (stringToURL(query)) {
-		const html = await getHTML(query)
+		html = await getHTML(query)
+	}
+
+	if (html) {
 		let { manifest, icons } = parseHTMLHead(html)
 
 		// Is there a touch icon ?
