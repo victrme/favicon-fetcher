@@ -50,8 +50,7 @@ async function getHTML(url: string) {
 			return html
 		}
 	} catch (error) {
-		console.warn("Can't get HTML: ")
-		console.warn((error as Error)?.message)
+		console.warn("Can't get HTML: ", url)
 	}
 
 	return null
@@ -147,8 +146,7 @@ async function isIconFetchable(url: string) {
 			return true
 		}
 	} catch (error) {
-		console.warn("Couldn't verify icon")
-		console.warn((error as Error)?.message)
+		console.warn("Couldn't verify icon: ", url)
 	}
 
 	return false
