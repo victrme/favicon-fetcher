@@ -117,7 +117,7 @@ function parseHTMLHead(html: string) {
 function createFullPath(url: string, query: string) {
 	const { hostname, protocol, pathname } = new URL(query)
 
-	if (url === '') return url
+	if (!url) return ''
 
 	// It means (https:)//
 	if (url.startsWith('//')) {
@@ -146,7 +146,7 @@ async function isIconFetchable(url: string) {
 			return true
 		}
 	} catch (error) {
-		console.warn("Couldn't verify icon: ", url)
+		//
 	}
 
 	return false
