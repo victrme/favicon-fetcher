@@ -29,11 +29,11 @@ function sortClosestToSize(icons: Icon[], val = 144) {
 }
 
 function getURLFromWebsiteList(query: string) {
-	websites.forEach((website) => {
-		if (query.includes(website.domain)) {
-			return website.url
+	for (const { domain, url } of websites) {
+		if (query.includes(domain)) {
+			return url
 		}
-	})
+	}
 
 	return ''
 }
