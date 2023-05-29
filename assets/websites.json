@@ -4,6 +4,10 @@
 		"url": "https://maps.gstatic.com/mapfiles/maps_lite/pwa/icons/maps15_bnuw3a_round_192x192.png"
 	},
 	{
+		"domain": "calendar.google.com",
+		"url": "https://www.gstatic.com/calendar/images/manifest/logo_2020q4_192.png"
+	},
+	{
 		"domain": "mail.google.com",
 		"url": "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
 	},
@@ -18,6 +22,10 @@
 	{
 		"domain": "outlook.office365.com",
 		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/258px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png"
+	},
+	{
+		"domain": "chat.openai.com",
+		"url": "https://chat.openai.com/apple-touch-icon.png"
 	},
 	{
 		"domain": "twitch.tv",
