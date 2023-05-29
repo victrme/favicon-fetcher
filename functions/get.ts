@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import * as htmlparser2 from 'htmlparser2'
-import websites from '../assets/websites.json'
 import { isnotfound, localhost } from '../assets/icons'
+import websites from '../assets/websites'
 
 type Icon = {
 	href: string
