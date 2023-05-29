@@ -95,7 +95,7 @@ function parseHTMLHead(html: string) {
 			const { rel, href, sizes } = attributes
 
 			if (rel?.toLocaleLowerCase() === 'manifest') {
-				result.manifest = href
+				result.manifest = href ?? ''
 			}
 
 			if (rel?.toLocaleLowerCase().includes('icon')) {
@@ -172,7 +172,7 @@ export async function handler(event: any) {
 
 	// Website is in list
 	res = getURLFromWebsiteList(query)
-	if (res.length > 0) {
+	if (res?.length > 0) {
 		return { ...response, body: res }
 	}
 
