@@ -1,4 +1,4 @@
 [[edge_functions]]
   cache = "manual"
-  path = "/*"
+  path = "/get/*"
   function = "[get]"
