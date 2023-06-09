@@ -168,6 +168,7 @@ function response(body: string): Response {
 	return new Response(body, {
 		headers: {
 			'access-control-allow-origin': '*',
+			'cache-control': 'public, maxage=3600',
 		},
 	})
 }
