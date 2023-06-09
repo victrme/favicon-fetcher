@@ -1,7 +1,7 @@
-import fetch from 'node-fetch'
-import * as htmlparser2 from 'htmlparser2'
-import { isnotfound, localhost } from '../assets/icons'
-import websites from '../assets/websites'
+// import type { Context } from 'https://edge.netlify.com'
+import { DOMParser } from 'https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts'
+import { isnotfound, localhost } from '../../assets/icons.ts'
+import websites from '../../assets/websites.ts'
 
 type Icon = {
 	href: string
@@ -16,11 +16,20 @@ type Manifest = {
 	}[]
 }
 
+type ParsedHTML = {
+	manifest: string
+	icons: {
+		href: string
+		size: number
+		touch: boolean
+	}[]
+}
+
 function stringToURL(str: string) {
 	try {
 		return new URL(str)
 	} catch (error) {
-		console.warn('Query is not valid: ', str)
+		console.warn(error)
 	}
 }
 
@@ -42,7 +51,7 @@ async function getHTML(url: string) {
 	try {
 		// Fetches with a timeout to avoid waiting for nothing
 		// Type issue: https://github.com/node-fetch/node-fetch/issues/1652
-		const signal = AbortSignal.timeout(4000) as any
+		const signal = AbortSignal.timeout(4000)
 		const response = await fetch(url, { signal })
 
 		if (response.status === 200) {
@@ -50,7 +59,7 @@ async function getHTML(url: string) {
 			return html
 		}
 	} catch (error) {
-		console.warn("Can't get HTML: ", url)
+		console.warn(error)
 	}
 
 	return null
@@ -61,7 +70,7 @@ async function getManifest(path: string) {
 		const manifest = await fetch(path)
 		const json = await manifest.json()
 		return json
-	} catch (error) {
+	} catch (_error) {
 		console.warn('Couldnt get manifest')
 		return {}
 	}
@@ -76,8 +85,8 @@ function parseManifest(json: Manifest): Icon[] {
 	}))
 }
 
-function parseHTMLHead(html: string) {
-	let result: { manifest: string; icons: Icon[] } = {
+function parseHTMLHead(html: string): ParsedHTML {
+	const result: ParsedHTML = {
 		manifest: '',
 		icons: [
 			{
@@ -88,11 +97,18 @@ function parseHTMLHead(html: string) {
 		],
 	}
 
-	const parser = new htmlparser2.Parser({
-		onopentag(name, attributes) {
-			if (name !== 'link') return
+	const document = new DOMParser().parseFromString(html, 'text/html')
+	const head = document?.querySelector('head')
 
-			const { rel, href, sizes } = attributes
+	if (head) {
+		for (const elem of Object.values(head.children)) {
+			if (elem.tagName.toLocaleLowerCase() !== 'link') {
+				continue
+			}
+
+			const rel = elem.getAttribute('rel') ?? ''
+			const href = elem.getAttribute('href') ?? ''
+			const sizes = elem.getAttribute('sizes') ?? ''
 
 			if (rel?.toLocaleLowerCase() === 'manifest') {
 				result.manifest = href ?? ''
@@ -105,11 +121,8 @@ function parseHTMLHead(html: string) {
 					touch: !!rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g),
 				})
 			}
-		},
-	})
-
-	parser.write(html)
-	parser.end()
+		}
+	}
 
 	return result
 }
@@ -139,41 +152,42 @@ async function isIconFetchable(url: string) {
 	}
 
 	try {
-		const signal = AbortSignal.timeout(2500) as any
+		const signal = AbortSignal.timeout(2500)
 		const response = await fetch(url, { signal })
 
 		if (response.status === 200) {
 			return true
 		}
 	} catch (error) {
-		//
+		console.warn(error)
 	}
 
 	return false
 }
 
-export async function handler(event: any) {
-	const response = {
-		statusCode: 200,
-		body: '',
+function response(body: string): Response {
+	return new Response(body, {
 		headers: {
 			'access-control-allow-origin': '*',
 		},
-	}
+	})
+}
 
-	const query = event.path.replace('/get/', '')
+export default async (request: Request) => {
+	const url = new URL(request.url)
+	const query = url?.pathname?.replace('/', '') ?? ''
 	let html: string | null = null
 	let res = ''
 
 	// Is locahost
 	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
-		return { ...response, body: localhost }
+		return response(localhost)
 	}
 
 	// Website is in list
 	res = getURLFromWebsiteList(query)
 	if (res?.length > 0) {
-		return { ...response, body: res }
+		return response(res)
 	}
 
 	// Fetch from website
@@ -191,7 +205,7 @@ export async function handler(event: any) {
 			res = createFullPath(res, query)
 
 			if (await isIconFetchable(res)) {
-				return { ...response, body: res }
+				return response(res)
 			}
 		}
 
@@ -207,18 +221,18 @@ export async function handler(event: any) {
 
 		// Validate icon url
 		if (await isIconFetchable(res)) {
-			return { ...response, body: res }
+			return response(res)
 		}
 	}
 
 	// Fallback
-	const URL = stringToURL(query)
-	res = `${URL?.protocol || 'http:'}//${URL?.hostname}/favicon.ico`
+	const fallback = stringToURL(query)
+	res = `${fallback?.protocol || 'http:'}//${fallback?.hostname}/favicon.ico`
 
 	// Validate icon url
 	if (await isIconFetchable(res)) {
-		return { ...response, body: res }
+		return response(res)
 	}
 
-	return { ...response, body: isnotfound }
+	return response(isnotfound)
 }

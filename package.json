@@ -2,17 +2,8 @@
 	"name": "favicon-fetcher",
 	"version": "1.0.0",
 	"description": "",
-	"main": "get.ts",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
+	"scripts": {},
 	"keywords": [],
 	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"@types/node-fetch": "^2.6.2",
-		"encoding": "^0.1.13",
-		"htmlparser2": "^8.0.1",
-		"node-fetch": "^3.3.0"
-	}
+	"license": "ISC"
 }
