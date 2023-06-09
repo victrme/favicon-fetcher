@@ -1,4 +1,3 @@
-// import type { Context } from 'https://edge.netlify.com'
 import { DOMParser } from 'https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts'
 import { isnotfound, localhost } from '../../assets/icons.ts'
 import websites from '../../assets/websites.ts'
