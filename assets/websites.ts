@@ -1,5 +1,9 @@
 export default [
 	{
+		domain: 'twitter.com',
+		url: 'https://abs.twimg.com/responsive-web/client-web/icon-ios.b1fc727a.png',
+	},
+	{
 		domain: 'google.com/maps',
 		url: 'https://maps.gstatic.com/mapfiles/maps_lite/pwa/icons/maps15_bnuw3a_round_192x192.png',
 	},
