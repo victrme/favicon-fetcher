@@ -1,4 +1,7 @@
+[dev]
+  autoLaunch = false
+
 [[edge_functions]]
   cache = "manual"
-  path = "/get/*"
+  path = "/*"
   function = "[get]"

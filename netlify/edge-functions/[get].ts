@@ -17,18 +17,14 @@ type Manifest = {
 
 type ParsedHTML = {
 	manifest: string
-	icons: {
-		href: string
-		size: number
-		touch: boolean
-	}[]
+	icons: Icon[]
 }
 
 function stringToURL(str: string) {
 	try {
 		return new URL(str)
-	} catch (error) {
-		console.warn(error)
+	} catch (_) {
+		console.warn("Can't parse to URL")
 	}
 }
 
@@ -57,8 +53,8 @@ async function getHTML(url: string) {
 			const html = await response.text()
 			return html
 		}
-	} catch (error) {
-		console.warn(error)
+	} catch (_) {
+		console.warn("Can't get HTML")
 	}
 
 	return null
@@ -70,7 +66,7 @@ async function getManifest(path: string) {
 		const json = await manifest.json()
 		return json
 	} catch (_error) {
-		console.warn('Couldnt get manifest')
+		console.warn("Can't get manifest")
 		return {}
 	}
 }
@@ -157,15 +153,16 @@ async function isIconFetchable(url: string) {
 		if (response.status === 200) {
 			return true
 		}
-	} catch (error) {
-		console.warn(error)
+	} catch (_) {
+		console.warn("Can't fetch icon")
 	}
 
 	return false
 }
 
-function response(body: string): Response {
+function response(body: string, status = 200): Response {
 	return new Response(body, {
+		status,
 		headers: {
 			'access-control-allow-origin': '*',
 			'cache-control': 'public, maxage=3600',
@@ -174,7 +171,13 @@ function response(body: string): Response {
 }
 
 export default async (request: Request) => {
-	const url = new URL(request.url)
+	console.log(request.url)
+
+	if (request.url.includes('favicon.ico')) {
+		return response('', 404)
+	}
+
+	const url = new URL(request.url) ?? ''
 	const query = url?.pathname?.replace('/', '') ?? ''
 	let html: string | null = null
 	let res = ''
