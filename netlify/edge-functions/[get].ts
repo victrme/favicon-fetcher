@@ -20,6 +20,19 @@ type ParsedHTML = {
 	icons: Icon[]
 }
 
+const fetchHeaders = {
+	'Cache-Control': 'max-age=0',
+	'Accept-Language': 'en-US;q=0.9,en;q=0.7',
+	'Sec-Ch-Ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+	'Sec-Ch-Ua-Mobile': '?0',
+	'Sec-Ch-Ua-Platform': '"macOS"',
+	'Sec-Fetch-Dest': 'document',
+	'Sec-Fetch-Site': 'none',
+	'Sec-Fetch-User': '?1',
+	'User-Agent':
+		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+}
+
 function stringToURL(str: string) {
 	try {
 		return new URL(str)
@@ -47,7 +60,10 @@ async function getHTML(url: string) {
 		// Fetches with a timeout to avoid waiting for nothing
 		// Type issue: https://github.com/node-fetch/node-fetch/issues/1652
 		const signal = AbortSignal.timeout(4000)
-		const response = await fetch(url, { signal })
+		const response = await fetch(url, {
+			headers: fetchHeaders,
+			signal,
+		})
 
 		if (response.status === 200) {
 			const html = await response.text()
@@ -62,7 +78,7 @@ async function getHTML(url: string) {
 
 async function getManifest(path: string) {
 	try {
-		const manifest = await fetch(path)
+		const manifest = await fetch(path, { headers: fetchHeaders })
 		const json = await manifest.json()
 		return json
 	} catch (_error) {
@@ -90,6 +106,12 @@ function parseHTMLHead(html: string): ParsedHTML {
 				touch: false,
 			},
 		],
+	}
+
+	const closingHeadPos = html.indexOf('</head>')
+
+	if (closingHeadPos > 0) {
+		html = html.slice(0, closingHeadPos)
 	}
 
 	const document = new DOMParser().parseFromString(html, 'text/html')
@@ -148,7 +170,7 @@ async function isIconFetchable(url: string) {
 
 	try {
 		const signal = AbortSignal.timeout(2500)
-		const response = await fetch(url, { signal })
+		const response = await fetch(url, { signal, headers: fetchHeaders })
 
 		if (response.status === 200) {
 			return true
