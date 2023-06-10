@@ -8,16 +8,16 @@ type Icon = {
 	touch?: boolean
 }
 
+type ParsedHTML = {
+	manifest: string
+	icons: Icon[]
+}
+
 type Manifest = {
 	icons?: {
 		src: string
 		sizes: string
 	}[]
-}
-
-type ParsedHTML = {
-	manifest: string
-	icons: Icon[]
 }
 
 const fetchHeaders = {
@@ -42,7 +42,8 @@ function stringToURL(str: string) {
 }
 
 function sortClosestToSize(icons: Icon[], val = 144) {
-	return icons.sort((a, b) => Math.abs(a.size - val) - Math.abs(b.size - val))
+	const sorted = icons.sort((a, b) => Math.abs(a.size - val) - Math.abs(b.size - val))
+	return sorted
 }
 
 function getURLFromWebsiteList(query: string) {
@@ -55,11 +56,9 @@ function getURLFromWebsiteList(query: string) {
 	return ''
 }
 
-async function getHTML(url: string) {
+async function getHTML(url: string): Promise<string> {
 	try {
-		// Fetches with a timeout to avoid waiting for nothing
-		// Type issue: https://github.com/node-fetch/node-fetch/issues/1652
-		const signal = AbortSignal.timeout(4000)
+		const signal = AbortSignal.timeout(6000)
 		const response = await fetch(url, {
 			headers: fetchHeaders,
 			signal,
@@ -73,16 +72,16 @@ async function getHTML(url: string) {
 		console.warn("Can't get HTML")
 	}
 
-	return null
+	return ''
 }
 
-async function getManifest(path: string) {
+async function getManifest(path: string): Promise<Manifest> {
 	try {
 		const manifest = await fetch(path, { headers: fetchHeaders })
 		const json = await manifest.json()
 		return json
 	} catch (_error) {
-		console.warn("Can't get manifest")
+		console.warn("Can't get manifest: " + path)
 		return {}
 	}
 }
@@ -97,17 +96,7 @@ function parseManifest(json: Manifest): Icon[] {
 }
 
 function parseHTMLHead(html: string): ParsedHTML {
-	const result: ParsedHTML = {
-		manifest: '',
-		icons: [
-			{
-				href: '/favicon.ico',
-				size: 16,
-				touch: false,
-			},
-		],
-	}
-
+	const result: ParsedHTML = { manifest: '', icons: [] }
 	const closingHeadPos = html.indexOf('</head>')
 
 	if (closingHeadPos > 0) {
@@ -117,27 +106,25 @@ function parseHTMLHead(html: string): ParsedHTML {
 	const document = new DOMParser().parseFromString(html, 'text/html')
 	const head = document?.querySelector('head')
 
-	if (head) {
-		for (const elem of Object.values(head.children)) {
-			if (elem.tagName.toLocaleLowerCase() !== 'link') {
-				continue
-			}
+	for (const elem of Object.values(head?.children ?? [])) {
+		if (elem.tagName.toLocaleLowerCase() !== 'link') {
+			continue
+		}
 
-			const rel = elem.getAttribute('rel') ?? ''
-			const href = elem.getAttribute('href') ?? ''
-			const sizes = elem.getAttribute('sizes') ?? ''
+		const rel = elem.getAttribute('rel') ?? ''
+		const href = elem.getAttribute('href') ?? ''
+		const sizes = elem.getAttribute('sizes') ?? ''
 
-			if (rel?.toLocaleLowerCase() === 'manifest') {
-				result.manifest = href ?? ''
-			}
+		if (rel?.toLocaleLowerCase() === 'manifest') {
+			result.manifest = href ?? ''
+		}
 
-			if (rel?.toLocaleLowerCase().includes('icon')) {
-				result.icons.push({
-					href,
-					size: parseInt(sizes?.split('x')[0]) || 48,
-					touch: !!rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g),
-				})
-			}
+		if (rel?.toLocaleLowerCase().includes('icon')) {
+			result.icons.push({
+				href,
+				size: parseInt(sizes?.split('x')[0]) || 48,
+				touch: !!rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g),
+			})
 		}
 	}
 
@@ -163,16 +150,18 @@ function createFullPath(url: string, query: string) {
 	return url
 }
 
-async function isIconFetchable(url: string) {
+async function isIconFetchable(url: string): Promise<boolean> {
 	if (!stringToURL(url)) {
 		return false
 	}
 
 	try {
+		console.time('ICON')
 		const signal = AbortSignal.timeout(2500)
 		const response = await fetch(url, { signal, headers: fetchHeaders })
 
 		if (response.status === 200) {
+			console.timeEnd('ICON')
 			return true
 		}
 	} catch (_) {
@@ -193,68 +182,49 @@ function response(body: string, status = 200): Response {
 }
 
 export default async (request: Request) => {
-	const url = new URL(request.url) ?? ''
-	const query = url?.pathname?.replace('/', '') ?? ''
-	let html: string | null = null
-	let res = ''
+	const query = (stringToURL(request.url)?.pathname ?? '')?.replace('/', '')
+	const icons: Icon[] = []
+	let manifestPath = ''
 
 	if (query === '') {
 		return response('')
 	}
 
-	// Is locahost
 	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
 		return response(localhost)
 	}
 
-	// Website is in list
-	res = getURLFromWebsiteList(query)
-	if (res?.length > 0) {
-		return response(res)
+	if (getURLFromWebsiteList(query)) {
+		return response(getURLFromWebsiteList(query))
 	}
 
-	// Fetch from website
-	if (stringToURL(query)) {
-		html = await getHTML(query)
+	const html = await getHTML(query)
+	const parsed = parseHTMLHead(html)
+
+	icons.push(...parsed.icons)
+	manifestPath = parsed.manifest
+
+	if (manifestPath.length > 0) {
+		const path = createFullPath(manifestPath, query)
+		const json = parseManifest(await getManifest(path))
+		icons.push(...json)
 	}
 
-	if (html) {
-		let { manifest, icons } = parseHTMLHead(html)
-
-		// Is there a touch icon ?
-		if (icons.some((ico) => ico.touch)) {
-			icons = sortClosestToSize(icons)
-			res = icons.filter((ico) => ico.touch)[0].href
-			res = createFullPath(res, query)
-
-			if (await isIconFetchable(res)) {
-				return response(res)
-			}
-		}
-
-		// Is manifest available ?
-		else if (manifest.length > 0) {
-			const path = createFullPath(manifest, query)
-			const json = await getManifest(path)
-			icons = icons.concat(parseManifest(json as Manifest))
-		}
-
-		icons = sortClosestToSize(icons)
-		res = createFullPath(icons[0]?.href, query)
-
-		// Validate icon url
-		if (await isIconFetchable(res)) {
-			return response(res)
-		}
+	if (icons.length === 0) {
+		icons.push({
+			href: `/favicon.ico`,
+			size: -1024,
+			touch: false,
+		})
 	}
 
-	// Fallback
-	const fallback = stringToURL(query)
-	res = `${fallback?.protocol || 'http:'}//${fallback?.hostname}/favicon.ico`
+	console.log(sortClosestToSize(icons))
 
-	// Validate icon url
-	if (await isIconFetchable(res)) {
-		return response(res)
+	for (const icon of sortClosestToSize(icons)) {
+		const path = createFullPath(icon.href, query)
+		if (await isIconFetchable(path)) {
+			return response(path)
+		}
 	}
 
 	return response(isnotfound)
