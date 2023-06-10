@@ -20,6 +20,65 @@ type Manifest = {
 	}[]
 }
 
+export default async (request: Request) => {
+	const query = (stringToURL(request.url)?.pathname ?? '')?.replace('/', '')
+	const icons: Icon[] = []
+	let manifestPath = ''
+
+	if (query === '') {
+		return response('')
+	}
+
+	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
+		return response(localhost)
+	}
+
+	if (getURLFromWebsiteList(query)) {
+		return response(getURLFromWebsiteList(query))
+	}
+
+	const html = await getHTML(query)
+	const parsed = parseHTMLHead(html)
+
+	icons.push(...parsed.icons)
+	manifestPath = parsed.manifest
+
+	if (manifestPath.length > 0) {
+		const path = createFullPath(manifestPath, query)
+		const json = parseManifest(await getManifest(path))
+		icons.push(...json)
+	}
+
+	if (icons.length === 0) {
+		icons.push({
+			href: `/favicon.ico`,
+			size: -1024,
+			touch: false,
+		})
+	}
+
+	console.log(sortClosestToSize(icons))
+
+	for (const icon of sortClosestToSize(icons)) {
+		const path = createFullPath(icon.href, query)
+		if (await isIconFetchable(path)) {
+			return response(path)
+		}
+	}
+
+	return response(isnotfound)
+}
+
+function response(body: string, status = 200): Response {
+	return new Response(body, {
+		status,
+		headers: {
+			'access-control-allow-origin': '*',
+			'cache-control': 'public, maxage=3600',
+		},
+	})
+}
+
 const fetchHeaders = {
 	'Cache-Control': 'max-age=0',
 	'Accept-Language': 'en-US;q=0.9,en;q=0.7',
@@ -169,63 +228,4 @@ async function isIconFetchable(url: string): Promise<boolean> {
 	}
 
 	return false
-}
-
-function response(body: string, status = 200): Response {
-	return new Response(body, {
-		status,
-		headers: {
-			'access-control-allow-origin': '*',
-			'cache-control': 'public, maxage=3600',
-		},
-	})
-}
-
-export default async (request: Request) => {
-	const query = (stringToURL(request.url)?.pathname ?? '')?.replace('/', '')
-	const icons: Icon[] = []
-	let manifestPath = ''
-
-	if (query === '') {
-		return response('')
-	}
-
-	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
-		return response(localhost)
-	}
-
-	if (getURLFromWebsiteList(query)) {
-		return response(getURLFromWebsiteList(query))
-	}
-
-	const html = await getHTML(query)
-	const parsed = parseHTMLHead(html)
-
-	icons.push(...parsed.icons)
-	manifestPath = parsed.manifest
-
-	if (manifestPath.length > 0) {
-		const path = createFullPath(manifestPath, query)
-		const json = parseManifest(await getManifest(path))
-		icons.push(...json)
-	}
-
-	if (icons.length === 0) {
-		icons.push({
-			href: `/favicon.ico`,
-			size: -1024,
-			touch: false,
-		})
-	}
-
-	console.log(sortClosestToSize(icons))
-
-	for (const icon of sortClosestToSize(icons)) {
-		const path = createFullPath(icon.href, query)
-		if (await isIconFetchable(path)) {
-			return response(path)
-		}
-	}
-
-	return response(isnotfound)
 }
