@@ -171,16 +171,14 @@ function response(body: string, status = 200): Response {
 }
 
 export default async (request: Request) => {
-	console.log(request.url)
-
-	if (request.url.includes('favicon.ico')) {
-		return response('', 404)
-	}
-
 	const url = new URL(request.url) ?? ''
 	const query = url?.pathname?.replace('/', '') ?? ''
 	let html: string | null = null
 	let res = ''
+
+	if (query === '') {
+		return response('')
+	}
 
 	// Is locahost
 	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
