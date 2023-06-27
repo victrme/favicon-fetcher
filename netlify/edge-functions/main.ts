@@ -21,9 +21,13 @@ type Manifest = {
 }
 
 export default async (request: Request) => {
-	const query = (stringToURL(request.url)?.pathname ?? '')?.replace('/', '')
+	let query = (stringToURL(request.url)?.pathname ?? '')?.replace('/', '')
 	const icons: Icon[] = []
 	let manifestPath = ''
+
+	if (query.startsWith('get/')) {
+		query = query.replace('get/', '')
+	}
 
 	if (query === '') {
 		return response('')
