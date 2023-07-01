@@ -5,8 +5,8 @@ Favicon fetcher finds sites favicons and fetches them fast
 ### Make it work
 
 ```
-> npm install netlify-cli -g
-> netlify dev
+> npm i -g wrangler
+> wrangler dev
 ```
 
-Then go to http://localhost:8888/:some-website
+Then go to http://localhost:8787?url=[some-website]

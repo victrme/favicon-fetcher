@@ -1,9 +1,9 @@
 {
 	"name": "favicon-fetcher",
 	"version": "1.0.0",
-	"description": "",
+	"author": "Victor Azevedo",
+	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"scripts": {},
 	"keywords": [],
-	"author": "",
 	"license": "ISC"
 }

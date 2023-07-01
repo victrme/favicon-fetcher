@@ -1,5 +1,6 @@
-import { isnotfound, localhost } from '../../assets/icons.ts'
-import websites from '../../assets/websites.ts'
+import websites from '../assets/websites.json'
+import notfoundIcon from '../assets/notfound'
+import localhostIcon from '../assets/localhost'
 
 type Icon = {
 	href: string
@@ -19,67 +20,6 @@ type Manifest = {
 	}[]
 }
 
-export default async (request: Request) => {
-	let query = (stringToURL(request.url)?.pathname ?? '')?.replace('/', '')
-	const icons: Icon[] = []
-	let manifestPath = ''
-
-	if (query.startsWith('get/')) {
-		query = query.replace('get/', '')
-	}
-
-	if (query === '') {
-		return response('')
-	}
-
-	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
-		return response(localhost)
-	}
-
-	if (getURLFromWebsiteList(query)) {
-		return response(getURLFromWebsiteList(query))
-	}
-
-	const html = await getHTML(query)
-	const parsed = parseHTMLHead(html)
-
-	icons.push(...parsed.icons)
-	manifestPath = parsed.manifest
-
-	if (manifestPath.length > 0) {
-		const path = createFullPath(manifestPath, query)
-		const json = parseManifest(await getManifest(path))
-		icons.push(...json)
-	}
-
-	if (icons.length === 0) {
-		icons.push({
-			href: `/favicon.ico`,
-			size: -1024,
-			touch: false,
-		})
-	}
-
-	for (const icon of sortClosestToSize(icons)) {
-		const path = createFullPath(icon.href, query)
-		if (await isIconFetchable(path)) {
-			return response(path)
-		}
-	}
-
-	return response(isnotfound)
-}
-
-function response(body: string, status = 200): Response {
-	return new Response(body, {
-		status,
-		headers: {
-			'access-control-allow-origin': '*',
-			'cache-control': 'public, maxage=3600',
-		},
-	})
-}
-
 const fetchHeaders = {
 	'Cache-Control': 'max-age=0',
 	'Accept-Language': 'en-US;q=0.9,en;q=0.7',
@@ -91,6 +31,71 @@ const fetchHeaders = {
 	'Sec-Fetch-User': '?1',
 	'User-Agent':
 		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+}
+
+export default {
+	async fetch(request: Request) {
+		const { searchParams } = new URL(request.url)
+		const icons: Icon[] = []
+
+		let query = searchParams.get('url') ?? ''
+		let manifestPath = ''
+
+		if (query.startsWith('get/')) {
+			query = query.replace('get/', '')
+		}
+
+		if (query === '') {
+			return response('')
+		}
+
+		if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
+			return response(localhostIcon)
+		}
+
+		if (getURLFromWebsiteList(query)) {
+			return response(getURLFromWebsiteList(query))
+		}
+
+		const html = await getHTML(query)
+		const parsed = parseHTMLHead(html)
+
+		icons.push(...parsed.icons)
+		manifestPath = parsed.manifest
+
+		if (manifestPath.length > 0) {
+			const path = createFullPath(manifestPath, query)
+			const json = parseManifest(await getManifest(path))
+			icons.push(...json)
+		}
+
+		if (icons.length === 0) {
+			icons.push({
+				href: `/favicon.ico`,
+				size: -1024,
+				touch: false,
+			})
+		}
+
+		for (const icon of sortClosestToSize(icons)) {
+			const path = createFullPath(icon.href, query)
+			if (await isIconFetchable(path)) {
+				return response(path)
+			}
+		}
+
+		return response(notfoundIcon)
+	},
+}
+
+function response(body: string, status = 200): Response {
+	return new Response(body, {
+		status,
+		headers: {
+			'access-control-allow-origin': '*',
+			'cache-control': 'public, maxage=3600',
+		},
+	})
 }
 
 function stringToURL(str: string) {

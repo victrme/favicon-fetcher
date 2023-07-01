@@ -1,7 +1,0 @@
-[dev]
-  autoLaunch = false
-
-[[edge_functions]]
-  cache = "manual"
-  path = "/*"
-  function = "main"
