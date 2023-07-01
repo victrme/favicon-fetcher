@@ -1,9 +1,7 @@
 {
-  "deno.enable": true,
-  "deno.enablePaths": [
-    "netlify/edge-functions"
-  ],
-  "deno.unstable": true,
-  "deno.importMap": ".netlify/edge-functions-import-map.json",
-  "deno.path": "/Users/victorazevedo/Library/Preferences/netlify/deno-cli/deno"
+	"deno.enable": true,
+	"deno.enablePaths": ["netlify/edge-functions"],
+	"deno.unstable": true,
+	"deno.importMap": ".netlify/edge-functions-import-map.json",
+	"deno.path": "C:/Users/Victor/AppData/Roaming/netlify/Config/deno-cli/deno"
 }
