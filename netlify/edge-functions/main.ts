@@ -1,4 +1,3 @@
-import { DOMParser } from 'https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts'
 import { isnotfound, localhost } from '../../assets/icons.ts'
 import websites from '../../assets/websites.ts'
 
@@ -61,8 +60,6 @@ export default async (request: Request) => {
 		})
 	}
 
-	console.log(sortClosestToSize(icons))
-
 	for (const icon of sortClosestToSize(icons)) {
 		const path = createFullPath(icon.href, query)
 		if (await isIconFetchable(path)) {
@@ -104,12 +101,16 @@ function stringToURL(str: string) {
 	}
 }
 
-function sortClosestToSize(icons: Icon[], val = 144) {
+function sortClosestToSize(icons: Icon[], val = 144): Icon[] {
 	const sorted = icons.sort((a, b) => Math.abs(a.size - val) - Math.abs(b.size - val))
 	return sorted
 }
 
-function getURLFromWebsiteList(query: string) {
+function sizesToNumber(str = ''): number {
+	return parseInt(str?.split('x')[0]) || 48
+}
+
+function getURLFromWebsiteList(query: string): string {
 	for (const { domain, url } of websites) {
 		if (query.includes(domain)) {
 			return url
@@ -154,7 +155,7 @@ function parseManifest(json: Manifest): Icon[] {
 
 	return json.icons.map((ico) => ({
 		href: ico.src,
-		size: parseInt(ico.sizes?.split('x')[0]) || 48,
+		size: sizesToNumber(ico.sizes),
 	}))
 }
 
@@ -166,27 +167,35 @@ function parseHTMLHead(html: string): ParsedHTML {
 		html = html.slice(0, closingHeadPos)
 	}
 
-	const document = new DOMParser().parseFromString(html, 'text/html')
-	const head = document?.querySelector('head')
+	const linktags: string[] = []
+	let start = html.indexOf('<link')
 
-	for (const elem of Object.values(head?.children ?? [])) {
-		if (elem.tagName.toLocaleLowerCase() !== 'link') {
-			continue
+	while (start !== -1) {
+		const end = html.indexOf('>', start) + 1
+		linktags.push(html.substring(start, end))
+		start = html.indexOf('<link', end)
+	}
+
+	const sliceAttr = (str = '', from = '', to = '') => {
+		const start = str.indexOf(from) + from.length
+		const end = str.indexOf(to, start) + (to.length - 1)
+		return str.substring(start, end)
+	}
+
+	for (const link of linktags) {
+		const rel = sliceAttr(link, 'rel="', '"').toLocaleLowerCase()
+		const href = sliceAttr(link, 'href="', '"').toLocaleLowerCase()
+		const sizes = sliceAttr(link, 'sizes="', '"').toLocaleLowerCase()
+
+		if (rel.includes('manifest')) {
+			result.manifest = href
 		}
 
-		const rel = elem.getAttribute('rel') ?? ''
-		const href = elem.getAttribute('href') ?? ''
-		const sizes = elem.getAttribute('sizes') ?? ''
-
-		if (rel?.toLocaleLowerCase() === 'manifest') {
-			result.manifest = href ?? ''
-		}
-
-		if (rel?.toLocaleLowerCase().includes('icon')) {
+		if (rel.includes('icon')) {
 			result.icons.push({
 				href,
-				size: parseInt(sizes?.split('x')[0]) || 48,
-				touch: !!rel?.toLocaleLowerCase().match(/apple-touch-icon|fluid-icon/g),
+				size: sizesToNumber(sizes),
+				touch: rel.includes('apple-touch') || rel.includes('fluid'),
 			})
 		}
 	}
@@ -219,12 +228,10 @@ async function isIconFetchable(url: string): Promise<boolean> {
 	}
 
 	try {
-		console.time('ICON')
 		const signal = AbortSignal.timeout(2500)
 		const response = await fetch(url, { signal, headers: fetchHeaders })
 
 		if (response.status === 200) {
-			console.timeEnd('ICON')
 			return true
 		}
 	} catch (_) {
