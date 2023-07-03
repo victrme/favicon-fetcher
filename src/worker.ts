@@ -35,15 +35,14 @@ const fetchHeaders = {
 
 export default {
 	async fetch(request: Request) {
-		const { pathname } = new URL(request.url)
 		const icons: Icon[] = []
-
-		let query = pathname.replace('/', '')
 		let manifestPath = ''
+		let query = ''
 
-		if (query.startsWith('get/')) {
-			query = query.replace('get/', '')
-		}
+		try {
+			query = new URL(request.url).pathname.replace('/', '')
+			query = query.startsWith('get/') ? query.replace('get/', '') : query
+		} catch (_) {}
 
 		if (query === '') {
 			return response('')
@@ -51,6 +50,12 @@ export default {
 
 		if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
 			return response(localhostIcon)
+		}
+
+		try {
+			new URL(query)
+		} catch (_) {
+			return response(notfoundIcon)
 		}
 
 		if (getURLFromWebsiteList(query)) {
