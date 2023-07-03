@@ -1,6 +1,6 @@
-import websites from '../assets/websites.json'
-import notfoundIcon from '../assets/notfound'
-import localhostIcon from '../assets/localhost'
+import websites from './assets/websites.json'
+import notfoundIcon from './assets/notfound'
+import localhostIcon from './assets/localhost'
 
 type Icon = {
 	href: string
@@ -35,10 +35,10 @@ const fetchHeaders = {
 
 export default {
 	async fetch(request: Request) {
-		const { searchParams } = new URL(request.url)
+		const { pathname } = new URL(request.url)
 		const icons: Icon[] = []
 
-		let query = searchParams.get('url') ?? ''
+		let query = pathname.replace('/', '')
 		let manifestPath = ''
 
 		if (query.startsWith('get/')) {
