@@ -1,8 +1,7 @@
-[build]
-  publish = "site"
-  functions = "functions"
+[dev]
+  autoLaunch = false
 
-[[redirects]]
-  from = '/*'
-  to = '/.netlify/functions/:splat'
-  status = 200
+[[edge_functions]]
+  cache = "manual"
+  path = "/*"
+  function = "function"
