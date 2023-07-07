@@ -4,4 +4,4 @@
 [[edge_functions]]
   cache = "manual"
   path = "/*"
-  function = "main"
+  function = "function"

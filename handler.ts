@@ -1,5 +1,11 @@
-import { isnotfound, localhost } from '../../assets/icons.ts'
-import websites from '../../assets/websites.ts'
+type Assets = {
+	notfound: string
+	localhost: string
+	websites: {
+		domain: string
+		url: string
+	}[]
+}
 
 type Icon = {
 	href: string
@@ -19,25 +25,48 @@ type Manifest = {
 	}[]
 }
 
-export default async (request: Request) => {
-	let query = (stringToURL(request.url)?.pathname ?? '')?.replace('/', '')
+const fetchHeaders = {
+	'Cache-Control': 'max-age=0',
+	'Accept-Language': 'en-US;q=0.9,en;q=0.7',
+	'Sec-Ch-Ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+	'Sec-Ch-Ua-Mobile': '?0',
+	'Sec-Ch-Ua-Platform': '"macOS"',
+	'Sec-Fetch-Dest': 'document',
+	'Sec-Fetch-Site': 'none',
+	'Sec-Fetch-User': '?1',
+	'User-Agent':
+		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+}
+
+export default async (query: string, assets: Assets): Promise<string> => {
+	const { notfound, localhost, websites } = assets
 	const icons: Icon[] = []
 	let manifestPath = ''
 
-	if (query.startsWith('get/')) {
-		query = query.replace('get/', '')
+	try {
+		query = new URL(query).pathname.replace('/', '')
+		query = query.startsWith('get/') ? query.replace('get/', '') : query
+	} catch (_) {
+		console.log('Not valid query')
 	}
 
 	if (query === '') {
-		return response('')
+		return ''
 	}
 
 	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
-		return response(localhost)
+		return localhost
 	}
 
-	if (getURLFromWebsiteList(query)) {
-		return response(getURLFromWebsiteList(query))
+	try {
+		new URL(query)
+	} catch (_) {
+		return notfound
+	}
+
+	const iconFromList = getURLFromWebsiteList(query, websites)
+	if (iconFromList) {
+		return iconFromList
 	}
 
 	const html = await getHTML(query)
@@ -61,36 +90,19 @@ export default async (request: Request) => {
 	}
 
 	for (const icon of sortClosestToSize(icons)) {
+		// removes queries to avoid cache busting URLs
+		if (icon.href.indexOf('?') > 0) {
+			icon.href = icon.href.slice(0, icon.href.indexOf('?'))
+		}
+
 		const path = createFullPath(icon.href, query)
+
 		if (await isIconFetchable(path)) {
-			return response(path)
+			return path
 		}
 	}
 
-	return response(isnotfound)
-}
-
-function response(body: string, status = 200): Response {
-	return new Response(body, {
-		status,
-		headers: {
-			'access-control-allow-origin': '*',
-			'cache-control': 'public, maxage=3600',
-		},
-	})
-}
-
-const fetchHeaders = {
-	'Cache-Control': 'max-age=0',
-	'Accept-Language': 'en-US;q=0.9,en;q=0.7',
-	'Sec-Ch-Ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-	'Sec-Ch-Ua-Mobile': '?0',
-	'Sec-Ch-Ua-Platform': '"macOS"',
-	'Sec-Fetch-Dest': 'document',
-	'Sec-Fetch-Site': 'none',
-	'Sec-Fetch-User': '?1',
-	'User-Agent':
-		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+	return notfound
 }
 
 function stringToURL(str: string) {
@@ -110,7 +122,7 @@ function sizesToNumber(str = ''): number {
 	return parseInt(str?.split('x')[0]) || 48
 }
 
-function getURLFromWebsiteList(query: string): string {
+function getURLFromWebsiteList(query: string, websites: Assets['websites']): string {
 	for (const { domain, url } of websites) {
 		if (query.includes(domain)) {
 			return url
