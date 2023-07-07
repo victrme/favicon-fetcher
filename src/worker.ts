@@ -83,6 +83,9 @@ export default {
 		}
 
 		for (const icon of sortClosestToSize(icons)) {
+			// removes queries to avoid cache busting URLs
+			icon.href = icon.href.slice(0, icon.href.indexOf('?'))
+
 			const path = createFullPath(icon.href, query)
 			if (await isIconFetchable(path)) {
 				return response(path)
