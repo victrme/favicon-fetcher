@@ -109,7 +109,7 @@ function stringToURL(str: string) {
 	try {
 		return new URL(str)
 	} catch (_) {
-		console.warn("Can't parse to URL")
+		// console.warn("Can't parse to URL")
 	}
 }
 
@@ -145,7 +145,7 @@ async function getHTML(url: string): Promise<string> {
 			return html
 		}
 	} catch (_) {
-		console.warn("Can't get HTML" + url)
+		// console.warn("Can't get HTML: " + url)
 	}
 
 	return ''
@@ -156,8 +156,8 @@ async function getManifest(url: string): Promise<Manifest> {
 		const manifest = await fetch(url, { headers: fetchHeaders })
 		const json = await manifest.json()
 		return json
-	} catch (_error) {
-		console.warn("Can't get manifest: " + url)
+	} catch (_) {
+		// console.warn("Can't get manifest: " + url)
 		return {}
 	}
 }
@@ -247,7 +247,7 @@ async function isIconFetchable(url: string): Promise<boolean> {
 			return true
 		}
 	} catch (_) {
-		console.warn("Can't fetch icon" + url)
+		// console.warn("Can't fetch icon" + url)
 	}
 
 	return false

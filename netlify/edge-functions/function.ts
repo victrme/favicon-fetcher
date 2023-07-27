@@ -10,6 +10,8 @@ export default async (request: Request) => {
 		localhost,
 	})
 
+	console.log(request.headers.get('referer'))
+
 	return new Response(icon, {
 		status: 200,
 		headers: {
