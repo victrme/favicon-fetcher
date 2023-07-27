@@ -145,19 +145,19 @@ async function getHTML(url: string): Promise<string> {
 			return html
 		}
 	} catch (_) {
-		console.warn("Can't get HTML")
+		console.warn("Can't get HTML" + url)
 	}
 
 	return ''
 }
 
-async function getManifest(path: string): Promise<Manifest> {
+async function getManifest(url: string): Promise<Manifest> {
 	try {
-		const manifest = await fetch(path, { headers: fetchHeaders })
+		const manifest = await fetch(url, { headers: fetchHeaders })
 		const json = await manifest.json()
 		return json
 	} catch (_error) {
-		console.warn("Can't get manifest: " + path)
+		console.warn("Can't get manifest: " + url)
 		return {}
 	}
 }
@@ -247,7 +247,7 @@ async function isIconFetchable(url: string): Promise<boolean> {
 			return true
 		}
 	} catch (_) {
-		console.warn("Can't fetch icon")
+		console.warn("Can't fetch icon" + url)
 	}
 
 	return false
