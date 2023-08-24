@@ -43,6 +43,8 @@ export default async (query: string, assets: Assets): Promise<string> => {
 	const icons: Icon[] = []
 	let manifestPath = ''
 
+	console.log(query)
+
 	try {
 		query = new URL(query).pathname.replace('/', '')
 		query = query.startsWith('get/') ? query.replace('get/', '') : query
@@ -57,8 +59,6 @@ export default async (query: string, assets: Assets): Promise<string> => {
 	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
 		return localhost
 	}
-
-	console.log(query)
 
 	try {
 		new URL(query)
