@@ -43,8 +43,6 @@ export default async (query: string, assets: Assets): Promise<string> => {
 	const icons: Icon[] = []
 	let manifestPath = ''
 
-	console.log(query)
-
 	try {
 		query = new URL(query).pathname
 		query = query.replace('/', '')
