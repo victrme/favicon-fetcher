@@ -46,7 +46,9 @@ export default async (query: string, assets: Assets): Promise<string> => {
 	console.log(query)
 
 	try {
-		query = new URL(query).pathname.replace('/', '')
+		query = new URL(query).pathname
+		query = query.replace('/', '')
+		query = query.replace('.netlify/internal/ef-cache/', '')
 		query = query.startsWith('get/') ? query.replace('get/', '') : query
 	} catch (_) {
 		console.log('Not valid query')
