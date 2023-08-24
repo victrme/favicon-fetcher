@@ -58,6 +58,8 @@ export default async (query: string, assets: Assets): Promise<string> => {
 		return localhost
 	}
 
+	console.log(query)
+
 	try {
 		new URL(query)
 	} catch (_) {
@@ -109,7 +111,7 @@ function stringToURL(str: string) {
 	try {
 		return new URL(str)
 	} catch (_) {
-		// console.warn("Can't parse to URL")
+		console.warn("Can't parse to URL")
 	}
 }
 
@@ -145,7 +147,7 @@ async function getHTML(url: string): Promise<string> {
 			return html
 		}
 	} catch (_) {
-		// console.warn("Can't get HTML: " + url)
+		console.warn("Can't get HTML: " + url)
 	}
 
 	return ''
@@ -157,7 +159,7 @@ async function getManifest(url: string): Promise<Manifest> {
 		const json = await manifest.json()
 		return json
 	} catch (_) {
-		// console.warn("Can't get manifest: " + url)
+		console.warn("Can't get manifest: " + url)
 		return {}
 	}
 }
@@ -247,7 +249,7 @@ async function isIconFetchable(url: string): Promise<boolean> {
 			return true
 		}
 	} catch (_) {
-		// console.warn("Can't fetch icon" + url)
+		console.warn("Can't fetch icon" + url)
 	}
 
 	return false
