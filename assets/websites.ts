@@ -1,7 +1,15 @@
 export default [
 	{
 		domain: 'twitter.com',
-		url: 'https://abs.twimg.com/responsive-web/client-web/icon-ios.b1fc727a.png',
+		url: 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg',
+	},
+	{
+		domain: 'x.com',
+		url: 'https://abs.twimg.com/responsive-web/client-web/icon-ios.77d25eba.png',
+	},
+	{
+		domain: 'instagram.com',
+		url: 'https://static.cdninstagram.com/rsrc.php/v3/ys/r/aM-g435MtEX.png',
 	},
 	{
 		domain: 'google.com/maps',
