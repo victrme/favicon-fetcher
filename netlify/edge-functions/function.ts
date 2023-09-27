@@ -13,7 +13,9 @@ export default async (request: Request) => {
 	return new Response(icon, {
 		status: 200,
 		headers: {
-			'access-control-allow-origin': '*',
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': '*',
+			'Access-Control-Allow-Headers': '*',
 			'cache-control': 'public, maxage=3600',
 		},
 	})
