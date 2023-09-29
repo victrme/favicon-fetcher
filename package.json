@@ -1,9 +1,31 @@
 {
-	"name": "favicon-fetcher",
+	"name": "@victr/favicon-fetcher",
 	"version": "1.0.0",
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
-	"scripts": {},
-	"keywords": [],
-	"license": "ISC"
+	"license": "ISC",
+	"keywords": [
+		"favicon"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/victrme/favicon-fetcher"
+	},
+	"scripts": {
+		"bundle": "esbuild node/index.ts --outdir=dist/ --bundle --format=esm",
+		"type": "tsc dist/index.js --outdir dist/ --target esnext --declaration --emitDeclarationOnly --allowJs",
+		"build": "pnpm bundle && pnpm type"
+	},
+	"files": [
+		"/dist"
+	],
+	"type": "module",
+	"exports": {
+		".": {
+			"import": {
+				"types": "./dist/node/index.d.ts",
+				"default": "./dist/node/index.js"
+			}
+		}
+	}
 }
