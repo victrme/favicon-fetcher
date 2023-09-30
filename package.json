@@ -1,6 +1,6 @@
 {
 	"name": "@victr/favicon-fetcher",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"license": "ISC",
@@ -23,8 +23,8 @@
 	"exports": {
 		".": {
 			"import": {
-				"types": "./dist/node/index.d.ts",
-				"default": "./dist/node/index.js"
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
 			}
 		}
 	}
