@@ -1,4 +1,9 @@
-export default [
+export type Websites = {
+	domain: string
+	url: string
+}[]
+
+export const websites: Websites = [
 	{
 		domain: 'twitter.com',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg',

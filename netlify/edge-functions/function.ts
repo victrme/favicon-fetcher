@@ -1,14 +1,17 @@
-import websites from '../../assets/websites.ts'
-import notfound from '../../assets/notfound.ts'
-import localhost from '../../assets/localhost.ts'
-import handler from '../../handler.ts'
+import handler from '../../src/index.ts'
 
 export default async (request: Request) => {
-	const icon = await handler(request.url, {
-		websites,
-		notfound,
-		localhost,
-	})
+	let query = ''
+
+	try {
+		query = new URL(request.url).pathname
+		query = query.replace('/', '').replace('.netlify/internal/ef-cache/', '')
+		query = query.startsWith('get/') ? query.replace('get/', '') : query
+	} catch (_) {
+		console.log('Not valid query')
+	}
+
+	const icon = await handler(query)
 
 	return new Response(icon, {
 		status: 200,

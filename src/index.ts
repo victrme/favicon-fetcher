@@ -1,11 +1,7 @@
-type Assets = {
-	notfound: string
-	localhost: string
-	websites: {
-		domain: string
-		url: string
-	}[]
-}
+import { notfound, localhost } from './assets/icons.ts'
+import { websites } from './assets/websites.ts'
+
+import type { Websites } from './assets/websites'
 
 type Icon = {
 	href: string
@@ -38,19 +34,9 @@ const fetchHeaders = {
 		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
 }
 
-export default async (query: string, assets: Assets): Promise<string> => {
-	const { notfound, localhost, websites } = assets
+export default async (query: string): Promise<string> => {
 	const icons: Icon[] = []
 	let manifestPath = ''
-
-	try {
-		query = new URL(query).pathname
-		query = query.replace('/', '')
-		query = query.replace('.netlify/internal/ef-cache/', '')
-		query = query.startsWith('get/') ? query.replace('get/', '') : query
-	} catch (_) {
-		console.log('Not valid query')
-	}
 
 	if (query === '') {
 		return ''
@@ -124,7 +110,7 @@ function sizesToNumber(str = ''): number {
 	return parseInt(str?.split('x')[0]) || 48
 }
 
-function getURLFromWebsiteList(query: string, websites: Assets['websites']): string {
+function getURLFromWebsiteList(query: string, websites: Websites): string {
 	for (const { domain, url } of websites) {
 		if (query.includes(domain)) {
 			return url
