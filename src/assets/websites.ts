@@ -106,6 +106,6 @@ export const websites: Websites = [
 	},
 	{
 		domain: 'discord.com',
-		url: 'https://discord.com/assets/ec2c34cadd4b5f4594415127380a85e6.ico',
+		url: 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg',
 	},
 ]
