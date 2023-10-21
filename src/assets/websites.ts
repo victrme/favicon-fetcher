@@ -96,4 +96,16 @@ export const websites: Websites = [
 		domain: 'linkedin.com',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg',
 	},
+	{
+		domain: 'monoprix.com',
+		url: 'https://client.monoprix.fr/images/favicons/apple-touch-icon.png',
+	},
+	{
+		domain: 'monoprix.fr',
+		url: 'https://client.monoprix.fr/images/favicons/apple-touch-icon.png',
+	},
+	{
+		domain: 'discord.com',
+		url: 'https://discord.com/assets/ec2c34cadd4b5f4594415127380a85e6.ico',
+	},
 ]

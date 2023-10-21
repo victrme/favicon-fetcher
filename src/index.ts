@@ -42,7 +42,8 @@ export default async (query: string): Promise<string> => {
 		return ''
 	}
 
-	if (query.startsWith('localhost') || query.startsWith('http://localhost')) {
+	if (query.startsWith('localhost') || query.startsWith('http://localhost') ||
+		query.startsWith('127.0.0.1') || query.startsWith('http://127.0.0.1')) {
 		return localhost
 	}
 
