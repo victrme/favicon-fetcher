@@ -1,5 +1,5 @@
-import { notfound, localhost } from './assets/icons'
-import { websites, Websites } from './assets/websites'
+import { notfound, localhost } from './assets/icons.ts'
+import { websites, Websites } from './assets/websites.ts'
 
 type Icon = {
 	href: string

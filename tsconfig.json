@@ -4,6 +4,8 @@
 		"outDir": "./dist",
 		"target": "ESNext",
 		"lib": ["ESNext", "DOM"],
-		"declaration": true
+		"declaration": true,
+		"allowImportingTsExtensions": true,
+		"emitDeclarationOnly": true
 	}
 }
