@@ -1,6 +1,6 @@
 {
 	"name": "@victr/favicon-fetcher",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"license": "ISC",
@@ -12,7 +12,7 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
-		"build": "tsc src/index.ts --outdir dist/ --target esnext --declaration",
+		"build": "tsc --project tsconfig.json",
 		"publish": "npm publish --access public"
 	},
 	"files": [

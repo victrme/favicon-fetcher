@@ -1,7 +1,9 @@
 {
+	"files": ["./src/index.ts"],
 	"compilerOptions": {
+		"outDir": "./dist",
+		"target": "ESNext",
 		"lib": ["ESNext", "DOM"],
-		"allowImportingTsExtensions": true,
-		"noEmit": false
+		"declaration": true
 	}
 }
