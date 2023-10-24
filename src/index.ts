@@ -1,7 +1,5 @@
 import { notfound, localhost } from './assets/icons.ts'
-import { websites } from './assets/websites.ts'
-
-import type { Websites } from './assets/websites'
+import { websites, Websites } from './assets/websites.ts'
 
 type Icon = {
 	href: string
@@ -42,8 +40,12 @@ export default async (query: string): Promise<string> => {
 		return ''
 	}
 
-	if (query.startsWith('localhost') || query.startsWith('http://localhost') ||
-		query.startsWith('127.0.0.1') || query.startsWith('http://127.0.0.1')) {
+	if (
+		query.startsWith('localhost') ||
+		query.startsWith('http://localhost') ||
+		query.startsWith('127.0.0.1') ||
+		query.startsWith('http://127.0.0.1')
+	) {
 		return localhost
 	}
 
@@ -113,8 +115,14 @@ function sizesToNumber(str = ''): number {
 
 function getURLFromWebsiteList(query: string, websites: Websites): string {
 	for (const { domain, url } of websites) {
-		if (query.includes(domain)) {
-			return url
+		if (typeof domain === 'string') {
+			if (query.includes(domain)) return url
+		}
+
+		if (typeof domain === 'object') {
+			for (const item of domain) {
+				if (query.includes(item)) return url
+			}
 		}
 	}
 

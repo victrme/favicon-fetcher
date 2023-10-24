@@ -1,5 +1,5 @@
 export type Websites = {
-	domain: string
+	domain: string | string[]
 	url: string
 }[]
 
@@ -25,11 +25,7 @@ export const websites: Websites = [
 		url: 'https://www.gstatic.com/calendar/images/manifest/logo_2020q4_192.png',
 	},
 	{
-		domain: 'mail.google.com',
-		url: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',
-	},
-	{
-		domain: 'gmail.com',
+		domain: ['mail.google.com', 'gmail.com'],
 		url: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',
 	},
 	{
@@ -65,23 +61,7 @@ export const websites: Websites = [
 		url: 'https://www.redditstatic.com/desktop2x/img/favicon/android-icon-192x192.png',
 	},
 	{
-		domain: 'amazon.com',
-		url: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg',
-	},
-	{
-		domain: 'amazon.ca',
-		url: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg',
-	},
-	{
-		domain: 'amazon.fr',
-		url: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg',
-	},
-	{
-		domain: 'amazon.de',
-		url: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg',
-	},
-	{
-		domain: 'amazon.it',
+		domain: ['amazon.com', 'amazon.ca', 'amazon.fr', 'amazon.de', 'amazon.it', 'amazon.co.uk'],
 		url: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg',
 	},
 	{
@@ -97,11 +77,7 @@ export const websites: Websites = [
 		url: 'https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg',
 	},
 	{
-		domain: 'monoprix.com',
-		url: 'https://client.monoprix.fr/images/favicons/apple-touch-icon.png',
-	},
-	{
-		domain: 'monoprix.fr',
+		domain: ['monoprix.com', 'monoprix.fr'],
 		url: 'https://client.monoprix.fr/images/favicons/apple-touch-icon.png',
 	},
 	{
