@@ -8,6 +8,7 @@ export default {
 			query = new URL(request.url).pathname
 			query = query.replace('/', '')
 			query = query.startsWith('get/') ? query.replace('get/', '') : query
+			query = query.startsWith('favicon/') ? query.replace('favicon/', '') : query
 		} catch (_) {
 			console.log('Not valid query')
 		}
