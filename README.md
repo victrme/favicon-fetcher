@@ -1,5 +1,3 @@
-[![Netlify Status](https://api.netlify.com/api/v1/badges/9d4fa0d7-58db-4d47-8ccf-03b340c82c0e/deploy-status)](https://app.netlify.com/sites/extraordinary-zabaione-993955/deploys)
-![Static Badge](https://img.shields.io/badge/Cloudflare%20Workers-should%20work-cab200.svg?colorA=555555&style=flat)
 
 # favicon-fetcher
 
