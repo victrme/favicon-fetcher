@@ -1,5 +1,6 @@
 .vscode
 .netlify
+.wrangler
 .DS_Store
 node_modules
 package-lock.json
