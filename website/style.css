@@ -1,0 +1,156 @@
+body {
+	margin-top: 4em;
+	max-width: 400px;
+	margin: auto;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+		'Helvetica Neue', sans-serif;
+	color-scheme: light dark;
+
+	background-color: #000;
+	min-height: 100vh;
+	display: flex;
+	place-content: center;
+	place-items: center;
+	flex-direction: column;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+main {
+	display: flex;
+	flex-direction: column;
+	height: 200px;
+	width: 100%;
+	color: #ddd;
+	border-radius: 2px;
+	background-color: #222;
+	overflow: hidden;
+}
+
+button {
+	display: inline-block;
+	border-radius: 1em;
+	border: none;
+	cursor: pointer;
+	color: inherit;
+	background-color: transparent;
+}
+
+button:hover {
+	background-color: #fff2;
+}
+
+button:active {
+	color: white;
+	background-color: #fff3;
+}
+
+/* Tab */
+
+.tab,
+.address-bar {
+	background-color: #333;
+}
+
+.tab {
+	width: 16em;
+	margin-top: 0.5em;
+	margin-left: 0.5em;
+	padding: 0.4em 0.6em;
+	border-top-right-radius: 1em;
+	border-top-left-radius: 1em;
+}
+
+.tab,
+.tab-inner,
+.tab-info {
+	display: flex;
+	gap: 0.6em;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.tab-inner {
+	width: 100%;
+}
+
+.tab img {
+	width: 1.6em;
+	height: 1.6em;
+	border: none;
+	border-radius: 0.2em;
+	transition: transform 0.1s linear;
+	cursor: pointer;
+}
+
+.tab img:hover {
+	transform: scale(1.2);
+}
+
+/* Address bar */
+
+.address-bar {
+	display: flex;
+	align-items: center;
+	padding: 0.2em 0 0.2em 1em;
+	gap: 1em;
+	overflow: hidden;
+}
+
+.address-bar button {
+	font-size: 2em;
+	width: 2em;
+	font-family: monospace;
+}
+
+.address-bar button:disabled {
+	user-select: none;
+	touch-action: none;
+	pointer-events: none;
+	opacity: 0.6;
+}
+
+.address-bar #refresh {
+	font-size: 1.5em;
+	font-family: monospace;
+}
+
+.address-bar input {
+	height: 2em;
+	width: 100%;
+	color: inherit;
+	font: inherit;
+	font-size: 0.9em;
+	border: none;
+	border-top-left-radius: 2em;
+	border-bottom-left-radius: 2em;
+	outline: 2px solid transparent;
+	padding: 0 1em;
+}
+
+.address-bar input:focus-visible {
+	outline-color: cornflowerblue;
+}
+
+/* footer */
+
+footer {
+	font-family: monospace;
+	margin-top: 3em;
+	text-align: center;
+}
+
+footer a {
+	opacity: 0.6;
+	color: #ddd;
+	text-decoration: none;
+	margin: 0 0.6em;
+}
+
+footer a:hover,
+footer a:active {
+	opacity: 1;
+	text-decoration: underline;
+}
