@@ -1,4 +1,4 @@
-import { notfoundPlain, localhostPlain, notfoundURI, localhostURI } from './assets/icons'
+import { notfound, localhost } from './assets/icons'
 import { websites, Websites } from './assets/websites'
 
 type Icon = {
@@ -20,23 +20,45 @@ type Manifest = {
 }
 
 export default {
-	text: async (q: string): Promise<string> => {
-		for (const path of await handler(q)) {
-			const result = await fetchIcon(path)
-			if (result) return path
-		}
-		return notfoundURI
-	},
-	blob: async (q: string) => {
-		for (const path of await handler(q)) {
-			const result = await fetchIcon(path)
-			if (result) return result
-		}
-		return await fetchIcon(notfoundPlain)
-	},
+	text: async (q: string) => handlerAsText(q),
+	blob: async (q: string) => handlerAsBlob(q),
 }
 
-async function handler(query: string): Promise<string[]> {
+async function handlerAsText(query: string): Promise<string> {
+	for (const path of await getIconList(query)) {
+		//
+		if (path === 'localhost') {
+			return localhost
+		}
+
+		const result = await fetchIcon(path)
+
+		if (result) {
+			return path
+		}
+	}
+
+	return notfound
+}
+
+async function handlerAsBlob(query: string): Promise<Blob> {
+	for (const path of await getIconList(query)) {
+		//
+		if (path === 'localhost') {
+			return dataUriToBlob(localhost)
+		}
+
+		const blob = await fetchIcon(path)
+
+		if (blob && blob.type.includes('image')) {
+			return blob
+		}
+	}
+
+	return dataUriToBlob(notfound)
+}
+
+async function getIconList(query: string): Promise<string[]> {
 	if (query === '') {
 		throw new Error('Query is empty')
 	}
@@ -48,7 +70,7 @@ async function handler(query: string): Promise<string[]> {
 	const isLocalhost = localPaths.some((path) => query.startsWith(path))
 
 	if (isLocalhost) {
-		return [localhostPlain]
+		return ['localhost']
 	}
 
 	//
@@ -138,8 +160,11 @@ async function fetchIcon(url: string): Promise<Blob | undefined> {
 	try {
 		const signal = AbortSignal.timeout(2500)
 		const resp = await fetch(url, { signal, headers })
-		const blob = await resp.blob()
-		return blob
+
+		if (resp.status === 200) {
+			const blob = await resp.blob()
+			return blob
+		}
 	} catch (_) {
 		console.warn("Can't fetch icon: " + url)
 	}
@@ -248,4 +273,11 @@ function getURLFromWebsiteList(query: string, websites: Websites): string | unde
 			}
 		}
 	}
+}
+
+function dataUriToBlob(uri: string): Blob {
+	const plain = atob(uri.replace('data:image/svg+xml;base64,', ''))
+	const blob = new Blob([plain], { type: 'image/svg+xml' })
+
+	return blob
 }
