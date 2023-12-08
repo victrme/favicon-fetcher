@@ -20,12 +20,12 @@ type Manifest = {
 }
 
 export default {
-	text: async (q: string) => handlerAsText(q),
-	blob: async (q: string) => handlerAsBlob(q),
+	text: handlerAsText,
+	blob: handlerAsBlob,
 }
 
 async function handlerAsText(query: string): Promise<string> {
-	for (const path of await getIconList(query)) {
+	for (const path of await foundIconUrls(query)) {
 		//
 		if (path === 'localhost') {
 			return localhost
@@ -42,7 +42,7 @@ async function handlerAsText(query: string): Promise<string> {
 }
 
 async function handlerAsBlob(query: string): Promise<Blob> {
-	for (const path of await getIconList(query)) {
+	for (const path of await foundIconUrls(query)) {
 		//
 		if (path === 'localhost') {
 			return dataUriToBlob(localhost)
@@ -58,7 +58,7 @@ async function handlerAsBlob(query: string): Promise<Blob> {
 	return dataUriToBlob(notfound)
 }
 
-async function getIconList(query: string): Promise<string[]> {
+async function foundIconUrls(query: string): Promise<string[]> {
 	if (query === '') {
 		throw new Error('Query is empty')
 	}
