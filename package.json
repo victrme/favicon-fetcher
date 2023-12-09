@@ -4,6 +4,7 @@
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"license": "ISC",
+	"type": "module",
 	"keywords": [
 		"favicon"
 	],
@@ -12,12 +13,14 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
+		"cloudflare": "pnpm --filter cloudflare dev",
+		"test:coverage": "vitest --run --coverage",
+		"test": "vitest --run",
 		"build": "tsc"
 	},
 	"files": [
 		"/dist"
 	],
-	"type": "module",
 	"exports": {
 		".": {
 			"import": {
@@ -25,5 +28,10 @@
 				"default": "./dist/index.js"
 			}
 		}
+	},
+	"devDependencies": {
+		"@vitest/coverage-v8": "^1.0.3",
+		"vite": "^5.0.7",
+		"vitest": "^1.0.3"
 	}
 }

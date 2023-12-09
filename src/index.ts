@@ -276,7 +276,7 @@ function getURLFromWebsiteList(query: string, websites: Websites): string | unde
 	}
 }
 
-function dataUriToBlob(uri: string): Blob {
+export function dataUriToBlob(uri: string): Blob {
 	const plain = atob(uri.replace('data:image/svg+xml;base64,', ''))
 	const blob = new Blob([plain], { type: 'image/svg+xml' })
 
