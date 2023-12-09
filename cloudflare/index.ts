@@ -1,4 +1,4 @@
-import favicon from '../../src/index.ts'
+import favicon from '../src/index.ts'
 
 const headers = new Headers({
 	'Access-Control-Allow-Origin': '*',
@@ -27,6 +27,8 @@ export default {
 			headers.set('Cache-Control', 'public, max-age=3600, immutable')
 			return new Response(text, { headers })
 		}
+
+		return new Response(undefined, { status: 400, headers })
 	},
 }
 
