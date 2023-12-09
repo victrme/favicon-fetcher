@@ -60,7 +60,7 @@ async function handlerAsBlob(query: string): Promise<Blob> {
 
 async function foundIconUrls(query: string): Promise<string[]> {
 	if (query === '') {
-		throw new Error('Query is empty')
+		return []
 	}
 
 	//
@@ -234,19 +234,23 @@ function parseHead(html: string): Head {
 //
 
 function fullpath(url: string, query: string): string {
-	const { hostname, protocol, pathname } = new URL(query)
+	try {
+		const { hostname, protocol, pathname } = new URL(query)
 
-	if (!url) return ''
+		if (!url) return ''
 
-	// It means (https:)//
-	if (url.startsWith('//')) {
-		url = `${protocol}${url}`
-	}
+		// It means (https:)//
+		if (url.startsWith('//')) {
+			url = `${protocol}${url}`
+		}
 
-	// If icon from root, only add protocol & hostname
-	// Absolute path, also gets pathname
-	if (!url.startsWith('http')) {
-		url = `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname + '/'}${url}`
+		// If icon from root, only add protocol & hostname
+		// Absolute path, also gets pathname
+		if (!url.startsWith('http')) {
+			url = `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname + '/'}${url}`
+		}
+	} catch (_) {
+		// ... error handling ?
 	}
 
 	return url
