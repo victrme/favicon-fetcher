@@ -5,24 +5,32 @@ const headers = new Headers({
 	'Access-Control-Allow-Headers': '*',
 	'Access-Control-Allow-Methods': '*',
 	'Access-Control-Max-Age': '3600',
-	'Cache-Control': 'public, max-age=604800, immutable',
 })
 
 export default {
 	async fetch(request: Request): Promise<Response> {
 		const url = new URL(request.url ?? '')
-		const type = url.searchParams.get('type') ?? 'text'
-		const iconurl = url.pathname.replace('/get/', '').replace('/', '')
+		const path = url.pathname
+		const type = path.startsWith('/blob') ? 'blob' : 'text'
+		let iconurl = ''
+
+		for (const param of ['/blob/', '/text/', '/get/', '/']) {
+			if (path.startsWith(param)) {
+				iconurl = path.replace(param, '')
+				break
+			}
+		}
 
 		if (type === 'blob') {
 			const blob = await handler.blob(iconurl)
 			headers.set('Content-Type', blob.type)
-
+			headers.set('Cache-Control', 'public, max-age=604800, immutable')
 			return new Response(blob, { headers })
 		}
-		//
-		else {
+
+		if (type === 'text') {
 			const text = await handler.text(iconurl)
+			headers.set('Cache-Control', 'public, max-age=3600, immutable')
 			return new Response(text, { headers })
 		}
 	},
