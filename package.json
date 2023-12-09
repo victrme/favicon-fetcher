@@ -12,8 +12,7 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json",
-		"publish": "pnpm build && npm publish --access public"
+		"build": "tsc --project tsconfig.json"
 	},
 	"files": [
 		"/dist"
