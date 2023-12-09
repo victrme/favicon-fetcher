@@ -13,7 +13,7 @@
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.json",
-		"publish": "npm publish --access public"
+		"publish": "pnpm build && npm publish --access public"
 	},
 	"files": [
 		"/dist"
