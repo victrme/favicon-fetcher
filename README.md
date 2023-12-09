@@ -2,13 +2,13 @@
 
 Favicon fetcher finds sites favicons and fetches them fast
 
-## Install as a node module
+## Install
 
 ```bash
 npm i @victr/favicon-fetcher
 ```
 
-#### Example use
+### Example use
 ```js
 import favicon from '@victr/favicon-fetcher'
 
@@ -20,7 +20,7 @@ window.onload = async function () {
 }
 ```
 
-#### Export type
+### Export type
 
 ```ts
 export default {
@@ -29,7 +29,7 @@ export default {
 }
 ```
 
-## Install as an API
+## As API
 
 ### Endpoints
 
