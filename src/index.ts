@@ -20,8 +20,8 @@ type Manifest = {
 }
 
 export default {
-	text: handlerAsText,
-	blob: handlerAsBlob,
+	url: handlerAsText,
+	img: handlerAsBlob,
 }
 
 async function handlerAsText(query: string): Promise<string> {
