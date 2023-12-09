@@ -66,10 +66,7 @@ async function foundIconUrls(query: string): Promise<string[]> {
 	//
 	// Step 1: Is localhost
 
-	const localPaths = ['localhost', 'http://localhost', '127.0.0.1', 'http://127.0.0.1']
-	const isLocalhost = localPaths.some((path) => query.startsWith(path))
-
-	if (isLocalhost) {
+	if (['http://localhost', 'http://127.0.0.1'].some((path) => query.startsWith(path))) {
 		return ['localhost']
 	}
 

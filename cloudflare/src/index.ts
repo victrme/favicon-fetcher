@@ -10,28 +10,27 @@ const headers = new Headers({
 export default {
 	async fetch(request: Request): Promise<Response> {
 		const url = new URL(request.url ?? '')
-		const path = url.pathname.startsWith('/favicon') ? url.pathname.replace('/favicon', '') : url.pathname
-		const type = path.startsWith('/blob') ? 'blob' : 'text'
-		let iconurl = ''
-
-		for (const param of ['/blob/', '/text/', '/get/', '/']) {
-			if (path.startsWith(param)) {
-				iconurl = path.replace(param, '')
-				break
-			}
-		}
+		const path = url.pathname
+		const endpoint = path.slice(0, path.indexOf('http'))
+		const type = endpoint.includes('/blob') ? 'blob' : 'text'
+		const target = addMissingProtocolSlash(path.slice(Math.max(0, path.indexOf('http'))))
 
 		if (type === 'blob') {
-			const blob = await favicon.img(iconurl)
+			const blob = await favicon.img(target)
 			headers.set('Content-Type', blob.type)
 			headers.set('Cache-Control', 'public, max-age=604800, immutable')
 			return new Response(blob, { headers })
 		}
 
 		if (type === 'text') {
-			const text = await favicon.url(iconurl)
+			const text = await favicon.url(target)
 			headers.set('Cache-Control', 'public, max-age=3600, immutable')
 			return new Response(text, { headers })
 		}
 	},
+}
+
+function addMissingProtocolSlash(url: string) {
+	const missingSlashRegex = /(https?:\/)(?!\/)([^\/]*)/
+	return url.replace(missingSlashRegex, (_, protocol, rest) => `${protocol}/${rest}`)
 }
