@@ -1,34 +1,57 @@
-
-# favicon-fetcher
+# favicon fetcher
 
 Favicon fetcher finds sites favicons and fetches them fast
 
-### Endpoint
+## Install as a node module
+
+```bash
+npm i @victr/favicon-fetcher
+```
+
+#### Example use
+```js
+import favicon from '@victr/favicon-fetcher'
+
+window.onload = async function () {
+  const img = document.getElementById('some-id')
+  const url = await favicon.url('https://github.com')
+
+  img.src = url
+}
+```
+
+#### Export type
+
+```ts
+export default {
+  url: (query: string) => Promise<string>,
+  img: (query: string) => Promise<Blob>,
+}
+```
+
+## Install as an API
+
+### Endpoints
+
+Protocols need to be included in the `:url` query. You can get your favicon as a plaintext url or a blob:
 
 ```HTTP
-GET /:url
+GET /text/:url
 ```
 
-### How to use
-
-#### Netlify Edge functions
-```bash
-# install
-npm install --global netlify-cli
-
-# debug
-netlify dev
+```HTTP
+GET /blob/:url
 ```
 
-#### Cloudflare Workers
+### Cloudflare Workers
+
 ```bash
 # install
-npm install --global wrangler
+pnpm --filter cloudflare i
 
 # debug
-wrangler dev
+pnpm --filter cloudflare dev
 
 # deploy
-wrangler login
-wrangler deploy
+pnpm --filter cloudflare deploy
 ```
