@@ -7,8 +7,8 @@ type Icon = {
 	touch?: boolean
 }
 
-type ParsedHTML = {
-	manifest: string
+type Head = {
+	manifest?: string
 	icons: Icon[]
 }
 
@@ -19,7 +19,109 @@ type Manifest = {
 	}[]
 }
 
-const fetchHeaders = {
+export default {
+	text: handlerAsText,
+	blob: handlerAsBlob,
+}
+
+async function handlerAsText(query: string): Promise<string> {
+	for (const path of await foundIconUrls(query)) {
+		//
+		if (path === 'localhost') {
+			return localhost
+		}
+
+		const result = await fetchIcon(path)
+
+		if (result) {
+			return path
+		}
+	}
+
+	return notfound
+}
+
+async function handlerAsBlob(query: string): Promise<Blob> {
+	for (const path of await foundIconUrls(query)) {
+		//
+		if (path === 'localhost') {
+			return dataUriToBlob(localhost)
+		}
+
+		const blob = await fetchIcon(path)
+
+		if (blob && blob.type.includes('image')) {
+			return blob
+		}
+	}
+
+	return dataUriToBlob(notfound)
+}
+
+async function foundIconUrls(query: string): Promise<string[]> {
+	if (query === '') {
+		return []
+	}
+
+	//
+	// Step 1: Is localhost
+
+	const localPaths = ['localhost', 'http://localhost', '127.0.0.1', 'http://127.0.0.1']
+	const isLocalhost = localPaths.some((path) => query.startsWith(path))
+
+	if (isLocalhost) {
+		return ['localhost']
+	}
+
+	//
+	// Step 2: Is available from static list
+
+	const urlFromList = getURLFromWebsiteList(query, websites)
+
+	if (urlFromList) {
+		return [urlFromList]
+	}
+
+	//
+	// Step 3: Put all potential icon paths in a list
+
+	const icons: Icon[] = []
+	const html = await fetchBody(query)
+
+	if (html) {
+		const head = parseHead(html)
+		icons.push(...head.icons)
+
+		if (head.manifest) {
+			const path = fullpath(head.manifest, query)
+			const manifest = await fetchManifest(path)
+
+			if (manifest) {
+				const json = parseManifest(manifest)
+				icons.push(...json)
+			}
+		}
+	}
+
+	if (icons.length === 0) {
+		icons.push({
+			href: `/favicon.ico`,
+			size: -1024,
+			touch: false,
+		})
+	}
+
+	//
+	// Step 4: Return sorted icons around specific size
+
+	return sortClosestToSize(icons, 144).map(({ href }) => fullpath(href, query))
+}
+
+//
+// Fetchers
+//
+
+const headers: HeadersInit = {
 	'Cache-Control': 'max-age=0',
 	'Accept-Language': 'en-US;q=0.9,en;q=0.7',
 	'Sec-Ch-Ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
@@ -32,144 +134,59 @@ const fetchHeaders = {
 		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
 }
 
-export default async (query: string): Promise<string> => {
-	const icons: Icon[] = []
-	let manifestPath = ''
-
-	if (query === '') {
-		return ''
-	}
-
-	if (
-		query.startsWith('localhost') ||
-		query.startsWith('http://localhost') ||
-		query.startsWith('127.0.0.1') ||
-		query.startsWith('http://127.0.0.1')
-	) {
-		return localhost
-	}
-
-	try {
-		new URL(query)
-	} catch (_) {
-		return notfound
-	}
-
-	const iconFromList = getURLFromWebsiteList(query, websites)
-	if (iconFromList) {
-		return iconFromList
-	}
-
-	const html = await getHTML(query)
-	const parsed = parseHTMLHead(html)
-
-	icons.push(...parsed.icons)
-	manifestPath = parsed.manifest
-
-	if (manifestPath.length > 0) {
-		const path = createFullPath(manifestPath, query)
-		const json = parseManifest(await getManifest(path))
-		icons.push(...json)
-	}
-
-	if (icons.length === 0) {
-		icons.push({
-			href: `/favicon.ico`,
-			size: -1024,
-			touch: false,
-		})
-	}
-
-	for (const icon of sortClosestToSize(icons)) {
-		// removes queries to avoid cache busting URLs
-		if (icon.href.indexOf('?') > 0) {
-			icon.href = icon.href.slice(0, icon.href.indexOf('?'))
-		}
-
-		const path = createFullPath(icon.href, query)
-
-		if (await isIconFetchable(path)) {
-			return path
-		}
-	}
-
-	return notfound
-}
-
-function stringToURL(str: string) {
-	try {
-		return new URL(str)
-	} catch (_) {
-		console.warn("Can't parse to URL")
-	}
-}
-
-function sortClosestToSize(icons: Icon[], val = 144): Icon[] {
-	const sorted = icons.sort((a, b) => Math.abs(a.size - val) - Math.abs(b.size - val))
-	return sorted
-}
-
-function sizesToNumber(str = ''): number {
-	return parseInt(str?.split('x')[0]) || 48
-}
-
-function getURLFromWebsiteList(query: string, websites: Websites): string {
-	for (const { domain, url } of websites) {
-		if (typeof domain === 'string') {
-			if (query.includes(domain)) return url
-		}
-
-		if (typeof domain === 'object') {
-			for (const item of domain) {
-				if (query.includes(item)) return url
-			}
-		}
-	}
-
-	return ''
-}
-
-async function getHTML(url: string): Promise<string> {
+async function fetchBody(url: string): Promise<string | undefined> {
 	try {
 		const signal = AbortSignal.timeout(6000)
-		const response = await fetch(url, {
-			headers: fetchHeaders,
-			signal,
-		})
-
-		if (response.status === 200) {
-			const html = await response.text()
-			return html
-		}
+		const resp = await fetch(url, { headers, signal })
+		const text = await resp.text()
+		return text
 	} catch (_) {
-		console.warn("Can't get HTML: " + url)
+		console.warn("Can't fetch HTML: " + url)
 	}
-
-	return ''
 }
 
-async function getManifest(url: string): Promise<Manifest> {
+async function fetchManifest(url: string): Promise<Manifest | undefined> {
 	try {
-		const manifest = await fetch(url, { headers: fetchHeaders })
-		const json = await manifest.json()
+		const signal = AbortSignal.timeout(2000)
+		const resp = await fetch(url, { headers, signal })
+		const json = await resp.json()
 		return json
 	} catch (_) {
-		console.warn("Can't get manifest: " + url)
-		return {}
+		console.warn("Can't fetch manifest: " + url)
 	}
 }
 
-function parseManifest(json: Manifest): Icon[] {
-	if (!json?.icons) return []
+async function fetchIcon(url: string): Promise<Blob | undefined> {
+	try {
+		const signal = AbortSignal.timeout(2500)
+		const resp = await fetch(url, { signal, headers })
 
-	return json.icons.map((ico) => ({
-		href: ico.src,
-		size: sizesToNumber(ico.sizes),
-	}))
+		if (resp.status === 200) {
+			const blob = await resp.blob()
+			return blob
+		}
+	} catch (_) {
+		console.warn("Can't fetch icon: " + url)
+	}
 }
 
-function parseHTMLHead(html: string): ParsedHTML {
-	const result: ParsedHTML = { manifest: '', icons: [] }
+//
+// Parsers
+//
+
+function parseManifest({ icons }: Manifest): Icon[] {
+	if (icons) {
+		return icons.map((icon) => ({
+			href: icon.src,
+			size: sizesToNumber(icon.sizes),
+		}))
+	}
+
+	return []
+}
+
+function parseHead(html: string): Head {
+	const result: Head = { icons: [] }
 	const closingHeadPos = html.indexOf('</head>')
 
 	if (closingHeadPos > 0) {
@@ -212,40 +229,59 @@ function parseHTMLHead(html: string): ParsedHTML {
 	return result
 }
 
-function createFullPath(url: string, query: string) {
-	const { hostname, protocol, pathname } = new URL(query)
+//
+// Helpers
+//
 
-	if (!url) return ''
+function fullpath(url: string, query: string): string {
+	try {
+		const { hostname, protocol, pathname } = new URL(query)
 
-	// It means (https:)//
-	if (url.startsWith('//')) {
-		url = `${protocol}${url}`
-	}
+		if (!url) return ''
 
-	// If icon from root, only add protocol & hostname
-	// Absolute path, also gets pathname
-	if (!url.startsWith('http')) {
-		url = `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname + '/'}${url}`
+		// It means (https:)//
+		if (url.startsWith('//')) {
+			url = `${protocol}${url}`
+		}
+
+		// If icon from root, only add protocol & hostname
+		// Absolute path, also gets pathname
+		if (!url.startsWith('http')) {
+			url = `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname + '/'}${url}`
+		}
+	} catch (_) {
+		// ... error handling ?
 	}
 
 	return url
 }
 
-async function isIconFetchable(url: string): Promise<boolean> {
-	if (!stringToURL(url)) {
-		return false
-	}
+function sortClosestToSize(icons: Icon[], val: number): Icon[] {
+	const sorted = icons.sort((a, b) => Math.abs(a.size - val) - Math.abs(b.size - val))
+	return sorted
+}
 
-	try {
-		const signal = AbortSignal.timeout(2500)
-		const response = await fetch(url, { signal, headers: fetchHeaders })
+function sizesToNumber(str = ''): number {
+	return parseInt(str?.split('x')[0]) || 48
+}
 
-		if (response.status === 200) {
-			return true
+function getURLFromWebsiteList(query: string, websites: Websites): string | undefined {
+	for (const { domain, url } of websites) {
+		if (typeof domain === 'string') {
+			if (query.includes(domain)) return url
 		}
-	} catch (_) {
-		console.warn("Can't fetch icon" + url)
-	}
 
-	return false
+		if (typeof domain === 'object') {
+			for (const item of domain) {
+				if (query.includes(item)) return url
+			}
+		}
+	}
+}
+
+function dataUriToBlob(uri: string): Blob {
+	const plain = atob(uri.replace('data:image/svg+xml;base64,', ''))
+	const blob = new Blob([plain], { type: 'image/svg+xml' })
+
+	return blob
 }
