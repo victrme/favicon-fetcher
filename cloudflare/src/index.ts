@@ -10,7 +10,7 @@ const headers = new Headers({
 export default {
 	async fetch(request: Request): Promise<Response> {
 		const url = new URL(request.url ?? '')
-		const path = url.pathname
+		const path = url.pathname.startsWith('/favicon') ? url.pathname.replace('/favicon', '') : url.pathname
 		const type = path.startsWith('/blob') ? 'blob' : 'text'
 		let iconurl = ''
 
