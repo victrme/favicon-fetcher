@@ -14,7 +14,6 @@
 	},
 	"scripts": {
 		"cloudflare": "pnpm --filter cloudflare dev",
-		"test:coverage": "vitest --run --coverage",
 		"test": "vitest --run",
 		"build": "tsc"
 	},
@@ -30,7 +29,6 @@
 		}
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "^1.0.3",
 		"vite": "^5.0.7",
 		"vitest": "^1.0.3",
 		"wrangler": "^3.19.0"
