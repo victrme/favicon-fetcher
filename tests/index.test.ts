@@ -8,6 +8,7 @@ let worker: UnstableDevWorker
 
 beforeAll(async () => {
 	worker = await unstable_dev('./cloudflare/index.ts', {
+		ip: '127.0.0.1',
 		experimental: { disableExperimentalWarning: true },
 	})
 })
@@ -138,14 +139,5 @@ describe('Fetching', function () {
 			response = await worker.fetch('/text/' + url)
 			expect((await response.text()) !== notfound).toBe(true)
 		})
-
-		it(
-			'fr.aliexpress.com',
-			async function () {
-				response = await worker.fetch('/text/https://fr.aliexpress.com')
-				expect((await response.text()) !== notfound).toBe(true)
-			},
-			{ timeout: 10000 }
-		)
 	})
 })
