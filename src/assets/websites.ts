@@ -8,10 +8,10 @@ export const websites: Websites = [
 		domain: 'twitter.com',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg',
 	},
-	{
-		domain: 'x.com',
-		url: 'https://abs.twimg.com/responsive-web/client-web/icon-ios.77d25eba.png',
-	},
+	// {
+	// 	domain: 'x.com',
+	// 	url: 'https://abs.twimg.com/responsive-web/client-web/icon-ios.77d25eba.png',
+	// },
 	{
 		domain: 'instagram.com',
 		url: 'https://static.cdninstagram.com/rsrc.php/v3/ys/r/aM-g435MtEX.png',
@@ -36,10 +36,10 @@ export const websites: Websites = [
 		domain: 'outlook.office365.com',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/258px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png',
 	},
-	{
-		domain: 'chat.openai.com',
-		url: 'https://chat.openai.com/apple-touch-icon.png',
-	},
+	// {
+	// 	domain: 'chat.openai.com',
+	// 	url: 'https://chat.openai.com/apple-touch-icon.png',
+	// },
 	{
 		domain: 'twitch.tv',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/7/74/Twitch-icon-5.png',
