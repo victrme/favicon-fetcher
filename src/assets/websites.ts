@@ -17,6 +17,22 @@ export const websites: Websites = [
 		url: 'https://static.cdninstagram.com/rsrc.php/v3/ys/r/aM-g435MtEX.png',
 	},
 	{
+		domain: 'keep.google.com',
+		url: 'https://ssl.gstatic.com/keep/keep_2023q4.ico',
+	},
+	{
+		domain: 'contacts.google.com',
+		url: 'https://ssl.gstatic.com/images/branding/product/2x/contacts_2022_96dp.png',
+	},
+	{
+		domain: 'photos.google.com',
+		url: 'https://ssl.gstatic.com/social/photosui/images/logo/2x/photos_96dp.png',
+	},
+	{
+		domain: 'messages.google.com',
+		url: 'https://ssl.gstatic.com/android-messages-web/images/2022.3/2x/messages_2022_96dp.png',
+	},
+	{
 		domain: 'google.com/maps',
 		url: 'https://maps.gstatic.com/mapfiles/maps_lite/pwa/icons/maps15_bnuw3a_round_192x192.png',
 	},
