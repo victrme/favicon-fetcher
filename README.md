@@ -9,6 +9,7 @@ npm i @victr/favicon-fetcher
 ```
 
 ### Example use
+
 ```js
 import favicon from '@victr/favicon-fetcher'
 
@@ -47,11 +48,11 @@ GET /blob/:url
 
 ```bash
 # install
-pnpm --filter cloudflare i
+pnpm i -r
+pnpm install
+pnpm cloudflare:install
 
 # debug
-pnpm --filter cloudflare dev
-
-# deploy
-pnpm --filter cloudflare deploy
+pnpm dev
+pnpm cloudflare:dev
 ```

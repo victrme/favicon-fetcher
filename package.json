@@ -13,7 +13,10 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
-		"cloudflare": "pnpm --filter cloudflare dev",
+		"cloudflare:install": "pnpm --filter cloudflare install",
+		"cloudflare:dev": "pnpm --filter cloudflare dev",
+		"install": "pnpm cloudflare:install",
+		"dev": "pnpm cloudflare:dev",
 		"test": "vitest --run",
 		"build": "tsc"
 	},
@@ -29,8 +32,8 @@
 		}
 	},
 	"devDependencies": {
-		"vite": "^5.0.11",
-		"vitest": "^1.2.0",
-		"wrangler": "^3.22.4"
+		"vite": "^5.0.12",
+		"vitest": "^1.2.2",
+		"wrangler": "^3.27.0"
 	}
 }
