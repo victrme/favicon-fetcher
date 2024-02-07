@@ -1,11 +1,11 @@
 body {
-	margin-top: 4em;
-	max-width: 400px;
+	font-size: 40px;
+	margin-top: 1em;
+	max-width: 20em;
 	margin: auto;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
 		'Helvetica Neue', sans-serif;
 	color-scheme: light dark;
-
 	background-color: #000;
 	min-height: 100vh;
 	display: flex;
@@ -21,16 +21,19 @@ body {
 main {
 	display: flex;
 	flex-direction: column;
-	height: 200px;
+	height: 10em;
 	width: 100%;
 	color: #ddd;
-	border-radius: 2px;
+	border-radius: 0.2em;
 	background-color: #222;
 	overflow: hidden;
 }
 
 button {
 	display: inline-block;
+	padding: 0;
+	font-size: 1em;
+	line-height: 1em;
 	border-radius: 1em;
 	border: none;
 	cursor: pointer;
@@ -81,12 +84,22 @@ button:active {
 	height: 1.6em;
 	border: none;
 	border-radius: 0.2em;
-	transition: transform 0.1s linear;
+	transition: opacity 0.05s linear;
 	cursor: pointer;
 }
 
 .tab img:hover {
-	transform: scale(1.2);
+	opacity: 0.7;
+}
+
+.tab img:active {
+	opacity: 0.5;
+}
+
+.tab button {
+	padding: 0 0.2em;
+	width: 1.2em;
+	height: 1.2em;
 }
 
 /* Address bar */
@@ -94,27 +107,9 @@ button:active {
 .address-bar {
 	display: flex;
 	align-items: center;
-	padding: 0.2em 0 0.2em 1em;
-	gap: 1em;
-	overflow: hidden;
-}
-
-.address-bar button {
-	font-size: 2em;
-	width: 2em;
-	font-family: monospace;
-}
-
-.address-bar button:disabled {
-	user-select: none;
-	touch-action: none;
-	pointer-events: none;
-	opacity: 0.6;
-}
-
-.address-bar #refresh {
-	font-size: 1.5em;
-	font-family: monospace;
+	padding: 0.2em 0 0.2em 0.5em;
+	gap: 0.5em;
+	width: 100%;
 }
 
 .address-bar input {
@@ -126,12 +121,36 @@ button:active {
 	border: none;
 	border-top-left-radius: 2em;
 	border-bottom-left-radius: 2em;
-	outline: 2px solid transparent;
-	padding: 0 1em;
+	outline: 0.1em solid transparent;
+	padding-inline-start: 1em;
 }
 
 .address-bar input:focus-visible {
 	outline-color: cornflowerblue;
+}
+
+.address-bar-controls {
+	display: flex;
+	column-gap: 0.3em;
+}
+
+.address-bar-controls #refresh span {
+	font-size: 0.7em;
+	vertical-align: middle;
+	font-family: monospace;
+}
+
+.address-bar-controls button {
+	font-size: 1.6em;
+	width: 1.1em;
+	font-family: monospace;
+}
+
+.address-bar-controls button:disabled {
+	user-select: none;
+	touch-action: none;
+	pointer-events: none;
+	opacity: 0.6;
 }
 
 /* footer */
@@ -140,6 +159,7 @@ footer {
 	font-family: monospace;
 	margin-top: 3em;
 	text-align: center;
+	font-size: 1rem;
 }
 
 footer a {
@@ -153,4 +173,30 @@ footer a:hover,
 footer a:active {
 	opacity: 1;
 	text-decoration: underline;
+}
+
+@media screen and (max-width: 860px) {
+	body {
+		font-size: 30px;
+	}
+}
+
+@media screen and (max-width: 620px) {
+	body {
+		font-size: 20px;
+	}
+
+	.address-bar input {
+		outline-width: 2px;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	body {
+		font-size: 16px;
+	}
+
+	footer {
+		font-size: 12px;
+	}
 }
