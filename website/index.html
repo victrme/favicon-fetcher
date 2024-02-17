@@ -3,9 +3,14 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Favicon Fetcher API example website</title>
+		<meta name="description" content="Favicon fetcher finds sites favicons and fetches them fast" />
+		<title>Favicon Fetcher: Find favicons and fetch them fast</title>
 
+		<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+		<link rel="icon" href="favicon-32x32.png" />
 		<link rel="stylesheet" href="style.css" />
+
+		<script src="index.js" defer></script>
 	</head>
 	<body>
 		<main>
@@ -36,14 +41,28 @@
 					><button disabled id="forward">
 						<span>→</span></button
 					><button id="refresh">
-						<span>⭮</span>
+						<span>↻</span>
 					</button>
 				</div>
-				<input type="url" name="favicon" id="i_favicon" placeholder="https://wikipedia.org" />
+				<form id="search-form">
+					<input
+						type="text"
+						name="search"
+						id="search-input"
+						autofocus
+						autocomplete="url"
+						spellcheck="false"
+						placeholder="wikipedia.org"
+					/>
+				</form>
 			</div>
-
-			<div class="mock-site"></div>
 		</main>
+
+		<div id="infos">
+			<p id="favicon-url">https://www.wikipedia.org/static/apple-touch/wikipedia.png</p>
+			<p id="favicon-size">32&times;32</p>
+		</div>
+
 		<footer>
 			<p>
 				<a href="https://favicon.victr.me">endpoint</a><a href="https://github.com/victrme/favicon-fetcher">github</a

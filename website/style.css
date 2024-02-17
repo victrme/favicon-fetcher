@@ -21,7 +21,7 @@ body {
 main {
 	display: flex;
 	flex-direction: column;
-	height: 10em;
+	height: 7em;
 	width: 100%;
 	color: #ddd;
 	border-radius: 0.2em;
@@ -39,6 +39,10 @@ button {
 	cursor: pointer;
 	color: inherit;
 	background-color: transparent;
+}
+
+button span {
+	vertical-align: text-top;
 }
 
 button:hover {
@@ -84,7 +88,7 @@ button:active {
 	height: 1.6em;
 	border: none;
 	border-radius: 0.2em;
-	transition: opacity 0.05s linear;
+	transition: opacity 0.02s linear;
 	cursor: pointer;
 }
 
@@ -94,6 +98,10 @@ button:active {
 
 .tab img:active {
 	opacity: 0.5;
+}
+
+.tab img.loading {
+	opacity: 0.2;
 }
 
 .tab button {
@@ -109,6 +117,10 @@ button:active {
 	align-items: center;
 	padding: 0.2em 0 0.2em 0.5em;
 	gap: 0.5em;
+	width: 100%;
+}
+
+.address-bar form {
 	width: 100%;
 }
 
@@ -134,12 +146,6 @@ button:active {
 	column-gap: 0.3em;
 }
 
-.address-bar-controls #refresh span {
-	font-size: 0.7em;
-	vertical-align: middle;
-	font-family: monospace;
-}
-
 .address-bar-controls button {
 	font-size: 1.6em;
 	width: 1.1em;
@@ -151,6 +157,17 @@ button:active {
 	touch-action: none;
 	pointer-events: none;
 	opacity: 0.6;
+}
+
+/* Infos */
+
+#infos {
+	display: none;
+	color: #ddd;
+	font-size: 1rem;
+	font-family: monospace;
+	text-align: center;
+	margin-top: 3em;
 }
 
 /* footer */

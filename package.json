@@ -12,6 +12,8 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
+		"website": "npx http-server ./website",
+		"dev": "npx concurrently 'pnpm --filter cloudflare dev' ''",
 		"build": "tsc --project tsconfig.json",
 		"publish": "npm publish --access public"
 	},
