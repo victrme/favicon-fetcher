@@ -13,7 +13,7 @@
 		<script src="index.js" defer></script>
 	</head>
 	<body>
-		<main>
+		<div id="previewer">
 			<div class="tab">
 				<div class="tab-inner">
 					<div class="tab-info">
@@ -49,14 +49,13 @@
 						type="text"
 						name="search"
 						id="search-input"
-						autofocus
 						autocomplete="url"
 						spellcheck="false"
 						placeholder="wikipedia.org"
 					/>
 				</form>
 			</div>
-		</main>
+		</div>
 
 		<div id="infos">
 			<p id="favicon-url">https://www.wikipedia.org/static/apple-touch/wikipedia.png</p>
@@ -65,8 +64,8 @@
 
 		<footer>
 			<p>
-				<a href="https://favicon.victr.me">endpoint</a><a href="https://github.com/victrme/favicon-fetcher">github</a
-				><a href="https://www.npmjs.com/package/@victr/favicon-fetcher">npm</a><a href="https://victr.me">victr</a>
+				<a href="https://api.favicon.victr.me/text/https://wikipedia.org">endpoint</a
+				><a href="https://github.com/victrme/favicon-fetcher">github</a><a href="https://victr.me">victr</a>
 			</p>
 		</footer>
 	</body>

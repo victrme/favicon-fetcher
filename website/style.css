@@ -18,10 +18,10 @@ body {
 	box-sizing: border-box;
 }
 
-main {
+#previewer {
 	display: flex;
 	flex-direction: column;
-	height: 7em;
+	height: 5.1em;
 	width: 100%;
 	color: #ddd;
 	border-radius: 0.2em;
