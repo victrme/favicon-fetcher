@@ -6,7 +6,7 @@ export type Websites = {
 export const websites: Websites = [
 	{
 		domain: 'twitter.com',
-		url: 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg',
+		url: 'https://brandlogos.net/wp-content/uploads/2015/11/twitter-logo.png',
 	},
 	// {
 	// 	domain: 'x.com',
@@ -99,5 +99,13 @@ export const websites: Websites = [
 	{
 		domain: 'discord.com',
 		url: 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg',
+	},
+	{
+		domain: 'slack.com',
+		url: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',
+	},
+	{
+		domain: 'lemmy.world',
+		url: 'https://cdn-1.webcatalog.io/catalog/lemmy-world/lemmy-world-icon-filled-256.webp'
 	},
 ]
