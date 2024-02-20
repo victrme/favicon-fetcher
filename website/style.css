@@ -170,6 +170,24 @@ button:active {
 	margin-top: 3em;
 }
 
+/* Zoom modal */
+
+#big-icon-modal {
+	outline: none;
+	padding: 0;
+	border: none;
+}
+
+#big-icon-modal::backdrop {
+	background-color: #000;
+}
+
+#big-icon-modal img {
+	width: 50vw;
+	height: 50vw;
+	object-fit: cover;
+}
+
 /* footer */
 
 footer {
