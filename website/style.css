@@ -1,0 +1,245 @@
+body {
+	font-size: 40px;
+	margin: 0;
+	font-family:
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		'Open Sans',
+		'Helvetica Neue',
+		sans-serif;
+	color-scheme: light dark;
+	background-color: #000;
+	min-height: 100vh;
+	display: flex;
+	place-content: center;
+	place-items: center;
+	flex-direction: column;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+#previewer {
+	display: flex;
+	flex-direction: column;
+	height: 5.1em;
+	width: 20em;
+	color: #ddd;
+	border-radius: 0.2em;
+	background-color: #222;
+	overflow: hidden;
+}
+
+button {
+	display: inline-block;
+	padding: 0;
+	font-size: 1em;
+	line-height: 1em;
+	border-radius: 1em;
+	border: none;
+	cursor: pointer;
+	color: inherit;
+	background-color: transparent;
+}
+
+button span {
+	vertical-align: text-top;
+}
+
+button:hover {
+	background-color: #fff2;
+}
+
+button:active {
+	color: white;
+	background-color: #fff3;
+}
+
+/* Tab */
+
+.tab,
+.address-bar {
+	background-color: #333;
+}
+
+.tab {
+	width: 16em;
+	margin-top: 0.5em;
+	margin-left: 0.5em;
+	padding: 0.4em 0.6em;
+	border-top-right-radius: 1em;
+	border-top-left-radius: 1em;
+}
+
+.tab,
+.tab-inner,
+.tab-info {
+	display: flex;
+	gap: 0.6em;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.tab-inner {
+	width: 100%;
+}
+
+.tab img {
+	width: 1.6em;
+	height: 1.6em;
+	border: none;
+	border-radius: 0.2em;
+	transition: opacity 0.02s linear;
+	cursor: pointer;
+}
+
+.tab img:hover {
+	opacity: 0.7;
+}
+
+.tab img:active {
+	opacity: 0.5;
+}
+
+.tab img.loading {
+	opacity: 0.2;
+}
+
+.tab button {
+	padding: 0 0.2em;
+	width: 1.2em;
+	height: 1.2em;
+}
+
+/* Address bar */
+
+.address-bar {
+	display: flex;
+	align-items: center;
+	padding: 0.2em 0 0.2em 0.5em;
+	gap: 0.5em;
+	width: 100%;
+}
+
+.address-bar form {
+	width: 100%;
+}
+
+.address-bar input {
+	height: 2em;
+	width: 100%;
+	color: inherit;
+	font: inherit;
+	font-size: 0.9em;
+	border: none;
+	border-top-left-radius: 2em;
+	border-bottom-left-radius: 2em;
+	outline: 0.1em solid transparent;
+	padding-inline-start: 1em;
+}
+
+.address-bar input:focus-visible {
+	outline-color: cornflowerblue;
+}
+
+.address-bar-controls {
+	display: flex;
+	column-gap: 0.3em;
+}
+
+.address-bar-controls button {
+	font-size: 1.6em;
+	width: 1.1em;
+	font-family: monospace;
+}
+
+.address-bar-controls button:disabled {
+	user-select: none;
+	touch-action: none;
+	pointer-events: none;
+	opacity: 0.6;
+}
+
+/* Infos */
+
+#infos {
+	display: none;
+	color: #ddd;
+	font-size: 1rem;
+	font-family: monospace;
+	text-align: center;
+	margin-top: 3em;
+}
+
+/* Zoom modal */
+
+#big-icon-modal {
+	outline: none;
+	padding: 0;
+	border: none;
+}
+
+#big-icon-modal::backdrop {
+	background-color: #000;
+}
+
+#big-icon-modal img {
+	width: 50vw;
+	height: 50vw;
+	object-fit: cover;
+}
+
+/* footer */
+
+footer {
+	font-family: monospace;
+	margin-top: 3em;
+	text-align: center;
+	font-size: 1rem;
+}
+
+footer a {
+	opacity: 0.6;
+	color: #ddd;
+	text-decoration: none;
+	margin: 0 0.6em;
+}
+
+footer a:hover,
+footer a:active {
+	opacity: 1;
+	text-decoration: underline;
+}
+
+@media screen and (max-width: 860px) {
+	body {
+		font-size: 30px;
+	}
+}
+
+@media screen and (max-width: 620px) {
+	body {
+		font-size: 20px;
+	}
+
+	.address-bar input {
+		outline-width: 2px;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	body {
+		font-size: 16px;
+	}
+
+	footer {
+		font-size: 12px;
+	}
+}
