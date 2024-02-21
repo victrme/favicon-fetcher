@@ -4,22 +4,18 @@
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"license": "ISC",
-	"keywords": [
-		"favicon"
-	],
+	"keywords": ["favicon"],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
-		"website": "npx http-server ./website",
+		"website": "npx http-server ./website -s -c-1",
 		"dev": "npx concurrently 'pnpm --filter cloudflare dev' ''",
 		"build": "tsc --project tsconfig.json",
 		"publish": "npm publish --access public"
 	},
-	"files": [
-		"/dist"
-	],
+	"files": ["/dist"],
 	"type": "module",
 	"exports": {
 		".": {
