@@ -193,7 +193,9 @@ button:active {
 #big-icon-modal img {
 	width: 50vw;
 	height: 50vw;
-	object-fit: cover;
+	max-width: 80vh;
+	max-height: 80vh;
+	object-fit: fill;
 }
 
 /* footer */
