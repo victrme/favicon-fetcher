@@ -1,6 +1,6 @@
 {
 	"name": "@victr/favicon-fetcher",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"license": "ISC",
@@ -10,10 +10,17 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
+		"cloudflare:install": "pnpm --filter cloudflare install",
+		"cloudflare:dev": "pnpm --filter cloudflare dev",
 		"website": "npx http-server ./website -s -c-1",
-		"dev": "npx concurrently 'pnpm --filter cloudflare dev' ''",
-		"build": "tsc --project tsconfig.json",
-		"publish": "npm publish --access public"
+		"dev": "pnpm cloudflare:dev",
+		"test": "vitest --run",
+		"build": "tsc"
+	},
+	"devDependencies": {
+		"vite": "^5.0.12",
+		"vitest": "^1.2.2",
+		"wrangler": "^3.27.0"
 	},
 	"files": ["/dist"],
 	"type": "module",

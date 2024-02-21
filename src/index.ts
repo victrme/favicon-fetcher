@@ -20,8 +20,8 @@ type Manifest = {
 }
 
 export default {
-	text: handlerAsText,
-	blob: handlerAsBlob,
+	url: handlerAsText,
+	img: handlerAsBlob,
 }
 
 async function handlerAsText(query: string): Promise<string> {
@@ -66,10 +66,7 @@ async function foundIconUrls(query: string): Promise<string[]> {
 	//
 	// Step 1: Is localhost
 
-	const localPaths = ['localhost', 'http://localhost', '127.0.0.1', 'http://127.0.0.1']
-	const isLocalhost = localPaths.some((path) => query.startsWith(path))
-
-	if (isLocalhost) {
+	if (['http://localhost', 'http://127.0.0.1'].some((path) => query.startsWith(path))) {
 		return ['localhost']
 	}
 
@@ -187,20 +184,21 @@ function parseManifest({ icons }: Manifest): Icon[] {
 
 function parseHead(html: string): Head {
 	const result: Head = { icons: [] }
-	const closingHeadPos = html.indexOf('</head>')
+	const endHeadTag = html.indexOf('</head>')
 
-	if (closingHeadPos > 0) {
-		html = html.slice(0, closingHeadPos)
+	if (endHeadTag > 0) {
+		html = html.slice(0, endHeadTag)
 	}
 
-	const linktags: string[] = []
-	let start = html.indexOf('<link')
-
-	while (start !== -1) {
-		const end = html.indexOf('>', start) + 1
-		linktags.push(html.substring(start, end))
-		start = html.indexOf('<link', end)
+	if (html.indexOf('<script') > 0) {
+		html = html
+			.split('<script')
+			.map((str) => str.slice(str.indexOf('</script>') + 9))
+			.join()
 	}
+
+	const links = html.split('<link').map((str) => `<link ${str.slice(0, str.indexOf('>'))}>`)
+	const metas = html.split('<meta').map((str) => `<meta ${str.slice(0, str.indexOf('>'))}>`)
 
 	const sliceAttr = (str = '', from = '', to = '') => {
 		const start = str.indexOf(from) + from.length
@@ -208,9 +206,18 @@ function parseHead(html: string): Head {
 		return str.substring(start, end)
 	}
 
-	for (const link of linktags) {
+	for (const meta of metas) {
+		const name = sliceAttr(meta, 'name="', '"').toLocaleLowerCase()
+		const content = sliceAttr(meta, 'content="', '"')
+
+		if (name.includes('apple-touch-icon')) {
+			result.icons.push({ href: content, size: 100, touch: true })
+		}
+	}
+
+	for (const link of links) {
 		const rel = sliceAttr(link, 'rel="', '"').toLocaleLowerCase()
-		const href = sliceAttr(link, 'href="', '"').toLocaleLowerCase()
+		const href = sliceAttr(link, 'href="', '"')
 		const sizes = sliceAttr(link, 'sizes="', '"').toLocaleLowerCase()
 
 		if (rel.includes('manifest')) {
@@ -221,7 +228,7 @@ function parseHead(html: string): Head {
 			result.icons.push({
 				href,
 				size: sizesToNumber(sizes),
-				touch: rel.includes('apple-touch') || rel.includes('fluid'),
+				touch: rel.includes('apple-touch') || rel.includes('fluid') || rel.includes('mask'),
 			})
 		}
 	}
@@ -279,7 +286,7 @@ function getURLFromWebsiteList(query: string, websites: Websites): string | unde
 	}
 }
 
-function dataUriToBlob(uri: string): Blob {
+export function dataUriToBlob(uri: string): Blob {
 	const plain = atob(uri.replace('data:image/svg+xml;base64,', ''))
 	const blob = new Blob([plain], { type: 'image/svg+xml' })
 
