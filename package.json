@@ -1,10 +1,12 @@
 {
 	"name": "@victr/favicon-fetcher",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"license": "ISC",
-	"keywords": ["favicon"],
+	"keywords": [
+		"favicon"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/victrme/favicon-fetcher"
@@ -22,7 +24,9 @@
 		"vitest": "^1.2.2",
 		"wrangler": "^3.27.0"
 	},
-	"files": ["/dist"],
+	"files": [
+		"/dist"
+	],
 	"type": "module",
 	"exports": {
 		".": {
