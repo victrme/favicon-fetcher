@@ -5,13 +5,21 @@ export type Websites = {
 
 export const websites: Websites = [
 	{
+		domain: 'vscode.dev',
+		url: 'https://vscode.dev/static/stable/code-192.png',
+	},
+	{
+		domain: 'designer.microsoft.com',
+		url: 'https://designer.microsoft.com/designer-logo-192.png',
+	},
+	{
+		domain: ['https://www.bing.com/images/create', 'copilot.microsoft.com'],
+		url: 'https://copilot.microsoft.com/sa/simg/favicon-cplt.ico',
+	},
+	{
 		domain: 'twitter.com',
 		url: 'https://brandlogos.net/wp-content/uploads/2015/11/twitter-logo.png',
 	},
-	// {
-	// 	domain: 'x.com',
-	// 	url: 'https://abs.twimg.com/responsive-web/client-web/icon-ios.77d25eba.png',
-	// },
 	{
 		domain: 'instagram.com',
 		url: 'https://static.cdninstagram.com/rsrc.php/v3/ys/r/aM-g435MtEX.png',
@@ -45,17 +53,13 @@ export const websites: Websites = [
 		url: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',
 	},
 	{
-		domain: 'google.com',
+		domain: ['://google.com', 'www.google.com'],
 		url: 'https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png',
 	},
 	{
 		domain: 'outlook.office365.com',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/258px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png',
 	},
-	// {
-	// 	domain: 'chat.openai.com',
-	// 	url: 'https://chat.openai.com/apple-touch-icon.png',
-	// },
 	{
 		domain: 'twitch.tv',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/7/74/Twitch-icon-5.png',
@@ -106,6 +110,10 @@ export const websites: Websites = [
 	},
 	{
 		domain: 'lemmy.world',
-		url: 'https://cdn-1.webcatalog.io/catalog/lemmy-world/lemmy-world-icon-filled-256.webp'
+		url: 'https://cdn-1.webcatalog.io/catalog/lemmy-world/lemmy-world-icon-filled-256.webp',
+	},
+	{
+		domain: 'editor.graphite.rs',
+		url: 'https://editor.graphite.rs/android-chrome-192x192.png',
 	},
 ]
