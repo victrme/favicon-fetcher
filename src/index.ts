@@ -80,22 +80,22 @@ async function foundIconUrls(query: string): Promise<string[]> {
 	}
 
 	//
-	// Step 3: Put all potential icon paths in a list
+	// Step 3: Put and sort all potential icon paths in a list
 
 	const icons: Icon[] = []
 	const html = await fetchBody(query)
 
 	if (html) {
 		const head = parseHead(html)
-		icons.push(...head.icons)
+		icons.push(...sortClosestToSize(head.icons, 144))
 
 		if (head.manifest) {
 			const path = fullpath(head.manifest, query)
 			const manifest = await fetchManifest(path)
 
 			if (manifest) {
-				const json = parseManifest(manifest)
-				icons.push(...json)
+				const manifestIcons = parseManifest(manifest)
+				icons.push(...sortClosestToSize(manifestIcons, 144))
 			}
 		}
 	}
@@ -109,9 +109,9 @@ async function foundIconUrls(query: string): Promise<string[]> {
 	}
 
 	//
-	// Step 4: Return sorted icons around specific size
+	// Step 4: Return list of href
 
-	return sortClosestToSize(icons, 144).map(({ href }) => fullpath(href, query))
+	return icons.map((icon) => icon.href)
 }
 
 //
@@ -241,26 +241,30 @@ function parseHead(html: string): Head {
 //
 
 function fullpath(url: string, query: string): string {
+	if (!url) return ''
+
+	let queryURL: URL
+
 	try {
-		const { hostname, protocol, pathname } = new URL(query)
-
-		if (!url) return ''
-
-		// It means (https:)//
-		if (url.startsWith('//')) {
-			url = `${protocol}${url}`
-		}
-
-		// If icon from root, only add protocol & hostname
-		// Absolute path, also gets pathname
-		if (!url.startsWith('http')) {
-			url = `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname + '/'}${url}`
-		}
+		queryURL = new URL(query)
 	} catch (_) {
-		// ... error handling ?
+		return '' // ... error handling ?
 	}
 
-	return url
+	const { hostname, protocol, pathname } = queryURL
+
+	if (url.startsWith('http')) {
+		return url
+	}
+
+	// It means (https:)//
+	if (url.startsWith('//')) {
+		return `${protocol}${url}`
+	}
+
+	// If icon from root, only add protocol & hostname
+	// Absolute path, also gets pathname
+	return `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname}${url}`
 }
 
 function sortClosestToSize(icons: Icon[], val: number): Icon[] {
