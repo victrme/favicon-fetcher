@@ -111,7 +111,7 @@ async function foundIconUrls(query: string): Promise<string[]> {
 	//
 	// Step 4: Return list of href
 
-	return icons.map((icon) => icon.href)
+	return icons.map((icon) => fullpath(icon.href, query))
 }
 
 //
