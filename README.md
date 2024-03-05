@@ -2,6 +2,8 @@
 
 Favicon fetcher finds sites favicons and fetches them fast
 
+Test it here: https://favicon.victr.me
+
 ## Install
 
 ```bash
@@ -48,11 +50,8 @@ GET /blob/:url
 
 ```bash
 # install
-pnpm i -r
 pnpm install
-pnpm cloudflare:install
 
 # debug
 pnpm dev
-pnpm cloudflare:dev
 ```
