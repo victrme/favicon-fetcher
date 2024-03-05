@@ -14,7 +14,7 @@
 	"scripts": {
 		"cloudflare:install": "pnpm --filter cloudflare install",
 		"cloudflare:dev": "pnpm --filter cloudflare dev",
-		"website": "npx http-server ./website -s -c-1",
+		"demo": "npx http-server ./demo -c-1",
 		"dev": "pnpm cloudflare:dev",
 		"test": "vitest --run",
 		"build": "tsc"
