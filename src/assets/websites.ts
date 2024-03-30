@@ -116,4 +116,8 @@ export const websites: Websites = [
 		domain: 'editor.graphite.rs',
 		url: 'https://editor.graphite.rs/android-chrome-192x192.png',
 	},
+	{
+		domain: 'chat.openai.com',
+		url: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg',
+	},
 ]
