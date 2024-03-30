@@ -120,4 +120,9 @@ export const websites: Websites = [
 		domain: 'chat.openai.com',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg',
 	},
+	{
+		domain: 'chrome.google.com',
+		url: 'https://www.google.com/chrome/static/images/chrome-logo-m100.svg',
+	},
+
 ]
