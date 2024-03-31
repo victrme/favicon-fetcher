@@ -124,5 +124,8 @@ export const websites: Websites = [
 		domain: 'chrome.google.com',
 		url: 'https://www.google.com/chrome/static/images/chrome-logo-m100.svg',
 	},
-
+	{
+		domain: 'mastodon.social',
+		url: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Mastodon_logotype_%28simple%29_new_hue.svg',
+	},
 ]
