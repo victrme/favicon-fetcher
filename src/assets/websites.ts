@@ -17,7 +17,7 @@ export const websites: Websites = [
 		url: 'https://copilot.microsoft.com/sa/simg/favicon-cplt.ico',
 	},
 	{
-		domain: 'twitter.com',
+		domain: ['twitter.com', 'x.com'],
 		url: 'https://brandlogos.net/wp-content/uploads/2015/11/twitter-logo.png',
 	},
 	{
@@ -29,6 +29,10 @@ export const websites: Websites = [
 		url: 'https://ssl.gstatic.com/keep/keep_2023q4.ico',
 	},
 	{
+		domain: 'docs.google.com',
+		url: 'https://kstatic.googleusercontent.com/files/97ecc831526fbe8c60fe88ef0d7a6cbf06361809f0acf857326681f6a1f35740d3bd7d69bf4a5381f5c31a863bccace4d9d1660379182901f73d24ef137f6fb4',
+	},
+	{
 		domain: 'contacts.google.com',
 		url: 'https://ssl.gstatic.com/images/branding/product/2x/contacts_2022_96dp.png',
 	},
@@ -37,11 +41,23 @@ export const websites: Websites = [
 		url: 'https://ssl.gstatic.com/social/photosui/images/logo/2x/photos_96dp.png',
 	},
 	{
+		domain: 'drive.google.com',
+		url: 'https://kstatic.googleusercontent.com/files/d57b24106c34c7e50ef3d98423b94ddaf35ad2da73a9b9d4d12f52dbb9dd4c08c2957f6255ab8690d5ef0b32cff8287e09577d05e479d263e872160c4c9e8363',
+	},
+	{
+		domain: 'music.youtube.com',
+		url: 'https://lh3.googleusercontent.com/8bC8ZC9RQ_cJj5lSa8LjCfRClGeSyp4SkN72C0tMSUIqGPVjEpHeUDfAScLNKy82MiXWLBlkpMl4FhJGrGRDhzHxOoXq5v-QSt-rvg=h120',
+	},
+	{
+		domain: 'podcasts.google.com',
+		url: 'https://lh3.googleusercontent.com/vnSr97Bu2sI2_h334BHmEn1zTPrtv0hM9MLn3YxkN6JVzmir_VH62GiPIKfwtPBTOQ8xH0XNI40xfPAYbwbJEU-1jG09ovlU0f4S1Q=h120',
+	},
+	{
 		domain: 'messages.google.com',
 		url: 'https://ssl.gstatic.com/android-messages-web/images/2022.3/2x/messages_2022_96dp.png',
 	},
 	{
-		domain: 'google.com/maps',
+		domain: ['google.com/maps', 'maps.google.com'],
 		url: 'https://maps.gstatic.com/mapfiles/maps_lite/pwa/icons/maps15_bnuw3a_round_192x192.png',
 	},
 	{
