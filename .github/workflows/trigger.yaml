@@ -1,4 +1,4 @@
-name: Trigger bonjourr-apis update
+name: Bonjourr-apis update
 
 on:
     push:
