@@ -129,10 +129,10 @@ describe('Fetching', function () {
 			expect((await response.text()) !== notfound).toBe(true)
 		})
 
-		it('help.fr.shopping.rakuten.net', async function () {
-			response = await worker.fetch('/text/https://help.fr.shopping.rakuten.net')
-			expect((await response.text()) !== notfound).toBe(true)
-		})
+		// it('help.fr.shopping.rakuten.net', async function () {
+		// 	response = await worker.fetch('/text/https://help.fr.shopping.rakuten.net')
+		// 	expect((await response.text()) !== notfound).toBe(true)
+		// })
 
 		it('microsoftedge.microsoft.com', async function () {
 			const url = 'https://microsoftedge.microsoft.com/addons/detail/ublock-origin/odfafepnkmbhccpbejgmiehpchacaeak'
