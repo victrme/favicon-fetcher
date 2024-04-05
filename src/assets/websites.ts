@@ -17,7 +17,7 @@ export const websites: Websites = [
 		url: 'https://copilot.microsoft.com/sa/simg/favicon-cplt.ico',
 	},
 	{
-		domain: ['twitter.com', 'x.com'],
+		domain: 'twitter.com',
 		url: 'https://brandlogos.net/wp-content/uploads/2015/11/twitter-logo.png',
 	},
 	{
