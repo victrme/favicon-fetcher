@@ -144,4 +144,16 @@ export const websites: Websites = [
 		domain: 'mastodon.social',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Mastodon_logotype_%28simple%29_new_hue.svg',
 	},
+	{
+		domain: 'https://rumble.com',
+		url: 'https://play-lh.googleusercontent.com/GfFUsEM-64j2_q41CQsN4jjaRnGkGcD5yL1dbY4r-TJM0oozSmRN_7tbQFIR1z8YKv7H',
+	},
+	{
+		domain: 'https://www.desertfinancial.com',
+		url: 'https://play-lh.googleusercontent.com/psjg27IoD4rmpqKR4cMm8lg1ttifUQVnUFgMMaRUIwSbYHDeRlkrTxZyntxTpIUyVfA=w480-h960',
+	},
+	{
+		domain: 'https://secure.americafirst.com',
+		url: 'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/1e/14/dd/1e14dd10-d040-33c0-1b93-6c0bdc179722/AppIcon-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp',
+	},
 ]
