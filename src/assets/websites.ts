@@ -20,10 +20,11 @@ export const websites: Websites = [
 		domain: 'twitter.com',
 		url: 'https://brandlogos.net/wp-content/uploads/2015/11/twitter-logo.png',
 	},
-	{
-		domain: 'x.com',
-		url: 'https://brandlogos.net/wp-content/uploads/2015/11/twitter-logo.png',
-	},
+	// {
+	// 	x.com breaks *****x.com urls :(
+	// 	domain: 'x.com',
+	// 	url: 'https://brandlogos.net/wp-content/uploads/2015/11/twitter-logo.png',
+	// },
 	{
 		domain: 'instagram.com',
 		url: 'https://static.cdninstagram.com/rsrc.php/v3/ys/r/aM-g435MtEX.png',
@@ -79,10 +80,6 @@ export const websites: Websites = [
 	{
 		domain: 'outlook.office365.com',
 		url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/258px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png',
-	},
-	{
-		domain: 'twitch.tv',
-		url: 'https://upload.wikimedia.org/wikipedia/commons/7/74/Twitch-icon-5.png',
 	},
 	{
 		domain: 'icloud.com/mail/',
@@ -162,6 +159,6 @@ export const websites: Websites = [
 	},
 	{
 		domain: 'twitch.tv',
-		url: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Twitch_Glitch_Logo_Purple.svg'
-	}
+		url: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Twitch_Glitch_Logo_Purple.svg',
+	},
 ]
