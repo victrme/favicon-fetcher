@@ -41,23 +41,25 @@ async function handlerAsText(query: string): Promise<string> {
 }
 
 async function handlerAsBlob(query: string): Promise<Blob> {
-	// for (const path of await foundIconUrls(query)) {
-	// 	const blob = await fetchIcon(path)
+	const base = 'https://raw.githubusercontent.com/victrme/favicon-fetcher/img-assets/src/icons/'
 
-	// 	if (blob && blob.type.includes('image')) {
-	// 		return blob
-	// 	}
-	// }
+	for (const path of await foundIconUrls(query.replace('/blob/', ''))) {
+		const blob = await fetchIcon(base + path)
 
-	// return await (await fetch('../src/icons/notfound.svg')).blob()
+		if (blob && blob.type.includes('image')) {
+			return blob
+		}
+	}
 
-	const resp = await fetch('./icons/notfound.svg')
+	const resp = await fetch(base + 'notfound.svg')
 	const blob = await resp.blob()
 
 	return blob
 }
 
 async function foundIconUrls(query: string): Promise<string[]> {
+	console.log(query)
+
 	if (query === '') {
 		return []
 	}
