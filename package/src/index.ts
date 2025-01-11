@@ -1,17 +1,17 @@
-import ICON_LIST from './icons.json'
+import STATIC_ICONS from '../icons'
 
-type Icon = {
+interface Icon {
 	href: string
 	size: number
 	touch?: boolean
 }
 
-type Head = {
+interface Head {
 	manifest?: string
 	icons: Icon[]
 }
 
-type Manifest = {
+interface Manifest {
 	icons?: {
 		src: string
 		sizes: string
@@ -24,52 +24,53 @@ export default {
 }
 
 async function handlerAsText(query: string): Promise<string> {
-	// for (const path of await foundIconUrls(query)) {
-	// 	//
-	// 	if (path !== 'localhost') {
-	// 		const result = await fetchIcon(path)
+	const found = await foundIconUrls(query.replace('/text/', ''))
+	const isLocalhost = found[0]?.startsWith('localhost.svg')
 
-	// 		if (!result) {
-	// 			return 'notfound.svg'
-	// 		}
-	// 	}
+	if (isLocalhost) {
+		return `${STATIC_ICONS.HOST}localhost.svg`
+	}
 
-	// 	return path
-	// }
+	for (const url of found) {
+		const blob = await fetchIcon(url)
 
-	return 'notfound.svg'
+		if (blob?.type.includes('image')) {
+			return url
+		}
+	}
+
+	return `${STATIC_ICONS.HOST}notfound.svg`
 }
 
 async function handlerAsBlob(query: string): Promise<Blob> {
-	const base = 'https://raw.githubusercontent.com/victrme/favicon-fetcher/img-assets/src/icons/'
+	const found = await foundIconUrls(query.replace('/blob/', ''))
+	const isLocalhost = found[0]?.startsWith('localhost.svg')
 
-	for (const path of await foundIconUrls(query.replace('/blob/', ''))) {
-		const blob = await fetchIcon(base + path)
+	if (isLocalhost) {
+		const resp = await fetch(STATIC_ICONS.HOST + 'localhost.svg')
+		const blob = await resp.blob()
+		return blob
+	}
 
-		if (blob && blob.type.includes('image')) {
+	for (const url of found) {
+		const blob = await fetchIcon(url)
+
+		if (blob?.type.includes('image')) {
 			return blob
 		}
 	}
 
-	const resp = await fetch(base + 'notfound.svg')
+	const resp = await fetch(STATIC_ICONS.HOST + 'notfound.svg')
 	const blob = await resp.blob()
-
 	return blob
 }
 
 async function foundIconUrls(query: string): Promise<string[]> {
-	console.log(query)
-
 	if (query === '') {
 		return []
 	}
 
-	// Step 1: Is localhost
-
-	// if (['http://localhost', 'http://127.0.0.1'].some((path) => query.startsWith(path))) {
-	// 	return ['localhost']
-	// }
-
+	// Step 1: Do nothing..
 	// Step 2: Is available from static list
 
 	const urlFromList = getIconFromList(query)
@@ -268,7 +269,7 @@ function sizesToNumber(str = ''): number {
 }
 
 function getIconFromList(query: string): string | undefined {
-	const iconList = Object.entries(ICON_LIST as Record<string, string[]>)
+	const iconList = Object.entries(STATIC_ICONS.LIST)
 
 	for (const [path, matches] of iconList) {
 		for (const match of matches) {

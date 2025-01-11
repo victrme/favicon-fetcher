@@ -1,13 +1,9 @@
 {
-	"files": ["./src/index.ts"],
+	"files": ["package/src/index.ts"],
 	"compilerOptions": {
-		"target": "ESNext",
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
 		"lib": ["ESNext", "DOM"],
 		"outDir": "./dist",
 		"strict": true,
-		"declaration": true,
-		"resolveJsonModule": true
+		"declaration": true
 	}
 }
