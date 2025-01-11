@@ -20,9 +20,9 @@
 		"build": "tsc"
 	},
 	"devDependencies": {
-		"vite": "^5.4.6",
-		"vitest": "^2.1.1",
-		"wrangler": "^3.78.5"
+		"vite": "^6.0.7",
+		"vitest": "^2.1.8",
+		"wrangler": "^3.101.0"
 	},
 	"files": [
 		"/dist"
