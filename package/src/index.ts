@@ -1,18 +1,17 @@
-import { notfound, localhost } from './assets/icons'
-import { websites, Websites } from './assets/websites'
+import STATIC_ICONS from '../icons'
 
-type Icon = {
+interface Icon {
 	href: string
 	size: number
 	touch?: boolean
 }
 
-type Head = {
+interface Head {
 	manifest?: string
 	icons: Icon[]
 }
 
-type Manifest = {
+interface Manifest {
 	icons?: {
 		src: string
 		sizes: string
@@ -25,37 +24,45 @@ export default {
 }
 
 async function handlerAsText(query: string): Promise<string> {
-	for (const path of await foundIconUrls(query)) {
-		//
-		if (path === 'localhost') {
-			return localhost
-		}
+	const found = await foundIconUrls(query.replace('/text/', ''))
+	const isLocalhost = found[0]?.startsWith('localhost.svg')
 
-		const result = await fetchIcon(path)
+	if (isLocalhost) {
+		return `${STATIC_ICONS.HOST}localhost.svg`
+	}
 
-		if (result) {
-			return path
+	for (const url of found) {
+		const blob = await fetchIcon(url)
+
+		if (blob?.type.includes('image')) {
+			return url
 		}
 	}
 
-	return notfound
+	return `${STATIC_ICONS.HOST}notfound.svg`
 }
 
 async function handlerAsBlob(query: string): Promise<Blob> {
-	for (const path of await foundIconUrls(query)) {
-		//
-		if (path === 'localhost') {
-			return dataUriToBlob(localhost)
-		}
+	const found = await foundIconUrls(query.replace('/blob/', ''))
+	const isLocalhost = found[0]?.startsWith('localhost.svg')
 
-		const blob = await fetchIcon(path)
+	if (isLocalhost) {
+		const resp = await fetch(STATIC_ICONS.HOST + 'localhost.svg')
+		const blob = await resp.blob()
+		return blob
+	}
 
-		if (blob && blob.type.includes('image')) {
+	for (const url of found) {
+		const blob = await fetchIcon(url)
+
+		if (blob?.type.includes('image')) {
 			return blob
 		}
 	}
 
-	return dataUriToBlob(notfound)
+	const resp = await fetch(STATIC_ICONS.HOST + 'notfound.svg')
+	const blob = await resp.blob()
+	return blob
 }
 
 async function foundIconUrls(query: string): Promise<string[]> {
@@ -63,23 +70,15 @@ async function foundIconUrls(query: string): Promise<string[]> {
 		return []
 	}
 
-	//
-	// Step 1: Is localhost
-
-	if (['http://localhost', 'http://127.0.0.1'].some((path) => query.startsWith(path))) {
-		return ['localhost']
-	}
-
-	//
+	// Step 1: Do nothing..
 	// Step 2: Is available from static list
 
-	const urlFromList = getURLFromWebsiteList(query, websites)
+	const urlFromList = getIconFromList(query)
 
 	if (urlFromList) {
 		return [urlFromList]
 	}
 
-	//
 	// Step 3: Put and sort all potential icon paths in a list
 
 	const icons: Icon[] = []
@@ -108,15 +107,12 @@ async function foundIconUrls(query: string): Promise<string[]> {
 		})
 	}
 
-	//
 	// Step 4: Return list of href
 
 	return icons.map((icon) => fullpath(icon.href, query))
 }
 
-//
 // Fetchers
-//
 
 const headers: HeadersInit = {
 	'Cache-Control': 'max-age=0',
@@ -167,9 +163,7 @@ async function fetchIcon(url: string): Promise<Blob | undefined> {
 	}
 }
 
-//
 // Parsers
-//
 
 function parseManifest({ icons }: Manifest): Icon[] {
 	if (icons) {
@@ -236,9 +230,7 @@ function parseHead(html: string): Head {
 	return result
 }
 
-//
 // Helpers
-//
 
 function fullpath(url: string, query: string): string {
 	if (!url) return ''
@@ -276,16 +268,12 @@ function sizesToNumber(str = ''): number {
 	return parseInt(str?.split('x')[0]) || 48
 }
 
-function getURLFromWebsiteList(query: string, websites: Websites): string | undefined {
-	for (const { domain, url } of websites) {
-		if (typeof domain === 'string') {
-			if (query.includes(domain)) return url
-		}
+function getIconFromList(query: string): string | undefined {
+	const iconList = Object.entries(STATIC_ICONS.LIST)
 
-		if (typeof domain === 'object') {
-			for (const item of domain) {
-				if (query.includes(item)) return url
-			}
+	for (const [path, matches] of iconList) {
+		for (const match of matches) {
+			if (query.includes(match)) return path
 		}
 	}
 }

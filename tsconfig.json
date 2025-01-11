@@ -1,9 +1,8 @@
 {
-	"files": ["./src/index.ts"],
+	"files": ["package/src/index.ts"],
 	"compilerOptions": {
-		"outDir": "./dist",
-		"target": "ESNext",
 		"lib": ["ESNext", "DOM"],
+		"outDir": "./dist",
 		"strict": true,
 		"declaration": true
 	}

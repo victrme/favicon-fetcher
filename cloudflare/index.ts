@@ -1,4 +1,4 @@
-import favicon from '../src/index.ts'
+import favicon from '../package/src/index.ts'
 
 const headers = new Headers({
 	'Access-Control-Allow-Origin': '*',
