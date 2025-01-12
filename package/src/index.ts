@@ -1,82 +1,125 @@
-import STATIC_ICONS from '../icons'
-
-interface Icon {
-	href: string
-	size: number
-	touch?: boolean
-}
-
-interface Head {
-	manifest?: string
-	icons: Icon[]
-}
-
-interface Manifest {
-	icons?: {
-		src: string
-		sizes: string
-	}[]
-}
+import { fullpath, getIconFromList, sortClosestToSize } from './helpers'
+import { fetchIcon, fetchBody, fetchManifest } from './fetchers'
+import { Icon, parseHead, parseManifest } from './parsers'
+import STATIC_ICONS from './icons'
 
 export default {
-	url: handlerAsText,
-	img: handlerAsBlob,
+	text: faviconAsText,
+	blob: faviconAsBlob,
+	fetch: faviconAsFetch,
 }
 
-async function handlerAsText(query: string): Promise<string> {
-	const found = await foundIconUrls(query.replace('/text/', ''))
-	const isLocalhost = found[0]?.startsWith('localhost.svg')
+/**
+ * @param query - Must add protocol in order to work (http:// or https://)
+ * @param fast - Fast mode does not check if found URL is valid.
+ * @returns
+ */
+async function faviconAsText(query: string, fast?: true) {
+	return await main(query, !!fast, 'text')
+}
 
-	if (isLocalhost) {
-		return `${STATIC_ICONS.HOST}localhost.svg`
+/**
+ * @param query - Must add protocol in order to work (http:// or https://)
+ * @param fast - Fast mode only load first favicon found
+ * @returns
+ */
+async function faviconAsBlob(query: string, fast?: true) {
+	return await main(query, !!fast, 'blob')
+}
+
+/**
+ * @param request A GET request with the return type and query as its pathname
+ * @returns A response with a 30 days cache control
+ * @example // Get wikipedia's favicon as text
+ * const url = "http://example.com/text/https://wikipedia.org"
+ * const resp = await favicon.fetch(url)
+ * const src = await resp.text()
+ */
+async function faviconAsFetch(request: Request): Promise<Response> {
+	const headers = new Headers({
+		'Content-Type': 'text/plain',
+		'Access-Control-Allow-Origin': '*',
+		'Access-Control-Allow-Methods': 'GET',
+		'Access-Control-Max-Age': 'public, max-age=604800, immutable',
+	})
+
+	const url = new URL(request.url ?? '')
+	const path = url.pathname
+	const endpoint = path.slice(0, path.indexOf('http'))
+	const type = endpoint.includes('/blob') ? 'blob' : 'text'
+	const query = path.slice(Math.max(0, path.indexOf('http')))
+
+	let result: unknown = undefined
+
+	if (type === 'blob') {
+		const blob = await main(query, false, 'blob')
+		headers.set('Content-Type', blob.type)
+		result = blob
+	}
+
+	if (type === 'text') {
+		result = await main(query, false, 'blob')
+	}
+
+	return new Response(undefined, { status: 400, headers })
+}
+
+//
+//
+//
+
+async function main(query: string, fast: boolean, as: 'blob'): Promise<Blob>
+async function main(query: string, fast: boolean, as: 'text'): Promise<string>
+async function main(query: string, fast: boolean, as: 'blob' | 'text') {
+	const found = await createFaviconList(query)
+	const hasOneIcon = found.length === 1
+	const useFastMode = found.length > 0 && fast
+
+	if (hasOneIcon || useFastMode) {
+		if (as === 'text') {
+			return found[0]
+		}
+
+		if (as === 'blob') {
+			const blob = await fetchIcon(found[0])
+
+			if (blob) {
+				return blob
+			}
+
+			if (useFastMode) {
+				throw new Error('Fast mode. Could not find valid favicon')
+			}
+		}
+
+		throw new Error('Static icon could not load. Wrong host url ?')
 	}
 
 	for (const url of found) {
 		const blob = await fetchIcon(url)
 
 		if (blob?.type.includes('image')) {
-			return url
+			if (as === 'text') return url
+			if (as === 'blob') return blob
 		}
 	}
 
-	return `${STATIC_ICONS.HOST}notfound.svg`
+	throw new Error('No valid icon found in list')
 }
 
-async function handlerAsBlob(query: string): Promise<Blob> {
-	const found = await foundIconUrls(query.replace('/blob/', ''))
-	const isLocalhost = found[0]?.startsWith('localhost.svg')
+async function createFaviconList(query: string): Promise<string[]> {
+	// Step 1: Return not found when empty
 
-	if (isLocalhost) {
-		const resp = await fetch(STATIC_ICONS.HOST + 'localhost.svg')
-		const blob = await resp.blob()
-		return blob
-	}
-
-	for (const url of found) {
-		const blob = await fetchIcon(url)
-
-		if (blob?.type.includes('image')) {
-			return blob
-		}
-	}
-
-	const resp = await fetch(STATIC_ICONS.HOST + 'notfound.svg')
-	const blob = await resp.blob()
-	return blob
-}
-
-async function foundIconUrls(query: string): Promise<string[]> {
 	if (query === '') {
-		return []
+		return [`${STATIC_ICONS.HOST}notfound.svg`]
 	}
 
-	// Step 1: Do nothing..
 	// Step 2: Is available from static list
 
-	const urlFromList = getIconFromList(query)
+	const staticIconUrl = getIconFromList(query)
 
-	if (urlFromList) {
-		return [urlFromList]
+	if (staticIconUrl) {
+		return [`${STATIC_ICONS.HOST}${staticIconUrl}`]
 	}
 
 	// Step 3: Put and sort all potential icon paths in a list
@@ -100,11 +143,18 @@ async function foundIconUrls(query: string): Promise<string[]> {
 	}
 
 	if (icons.length === 0) {
-		icons.push({
-			href: `/favicon.ico`,
-			size: -1024,
-			touch: false,
-		})
+		icons.push(
+			{
+				href: `/favicon.ico`,
+				size: -1024,
+				touch: false,
+			},
+			{
+				href: `${STATIC_ICONS.HOST}notfound.svg`,
+				size: -2048,
+				touch: false,
+			}
+		)
 	}
 
 	// Step 4: Return list of href
@@ -112,175 +162,9 @@ async function foundIconUrls(query: string): Promise<string[]> {
 	return icons.map((icon) => fullpath(icon.href, query))
 }
 
-// Fetchers
+// const target = addMissingProtocolSlash(path.slice(Math.max(0, path.indexOf('http'))))
 
-const headers: HeadersInit = {
-	'Cache-Control': 'max-age=0',
-	'Accept-Language': 'en-US;q=0.9,en;q=0.7',
-	'Sec-Ch-Ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-	'Sec-Ch-Ua-Mobile': '?0',
-	'Sec-Ch-Ua-Platform': '"macOS"',
-	'Sec-Fetch-Dest': 'document',
-	'Sec-Fetch-Site': 'none',
-	'Sec-Fetch-User': '?1',
-	'User-Agent':
-		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-}
-
-async function fetchBody(url: string): Promise<string | undefined> {
-	try {
-		const signal = AbortSignal.timeout(6000)
-		const resp = await fetch(url, { headers, signal })
-		const text = await resp.text()
-		return text
-	} catch (_) {
-		console.warn("Can't fetch HTML: " + url)
-	}
-}
-
-async function fetchManifest(url: string): Promise<Manifest | undefined> {
-	try {
-		const signal = AbortSignal.timeout(2000)
-		const resp = await fetch(url, { headers, signal })
-		const json = await resp.json()
-		return json
-	} catch (_) {
-		console.warn("Can't fetch manifest: " + url)
-	}
-}
-
-async function fetchIcon(url: string): Promise<Blob | undefined> {
-	try {
-		const signal = AbortSignal.timeout(2500)
-		const resp = await fetch(url, { signal, headers })
-
-		if (resp.status === 200) {
-			const blob = await resp.blob()
-			return blob
-		}
-	} catch (_) {
-		console.warn("Can't fetch icon: " + url)
-	}
-}
-
-// Parsers
-
-function parseManifest({ icons }: Manifest): Icon[] {
-	if (icons) {
-		return icons.map((icon) => ({
-			href: icon.src,
-			size: sizesToNumber(icon.sizes),
-		}))
-	}
-
-	return []
-}
-
-function parseHead(html: string): Head {
-	const result: Head = { icons: [] }
-	const endHeadTag = html.indexOf('</head>')
-
-	if (endHeadTag > 0) {
-		html = html.slice(0, endHeadTag)
-	}
-
-	if (html.indexOf('<script') > 0) {
-		html = html
-			.split('<script')
-			.map((str) => str.slice(str.indexOf('</script>') + 9))
-			.join()
-	}
-
-	const links = html.split('<link').map((str) => `<link ${str.slice(0, str.indexOf('>'))}>`)
-	const metas = html.split('<meta').map((str) => `<meta ${str.slice(0, str.indexOf('>'))}>`)
-
-	const sliceAttr = (str = '', from = '', to = '') => {
-		const start = str.indexOf(from) + from.length
-		const end = str.indexOf(to, start) + (to.length - 1)
-		return str.substring(start, end)
-	}
-
-	for (const meta of metas) {
-		const name = sliceAttr(meta, 'name="', '"').toLocaleLowerCase()
-		const content = sliceAttr(meta, 'content="', '"')
-
-		if (name.includes('apple-touch-icon')) {
-			result.icons.push({ href: content, size: 100, touch: true })
-		}
-	}
-
-	for (const link of links) {
-		const rel = sliceAttr(link, 'rel="', '"').toLocaleLowerCase()
-		const href = sliceAttr(link, 'href="', '"')
-		const sizes = sliceAttr(link, 'sizes="', '"').toLocaleLowerCase()
-
-		if (rel.includes('manifest')) {
-			result.manifest = href
-		}
-
-		if (rel.includes('icon')) {
-			result.icons.push({
-				href,
-				size: sizesToNumber(sizes),
-				touch: rel.includes('apple-touch') || rel.includes('fluid') || rel.includes('mask'),
-			})
-		}
-	}
-
-	return result
-}
-
-// Helpers
-
-function fullpath(url: string, query: string): string {
-	if (!url) return ''
-
-	let queryURL: URL
-
-	try {
-		queryURL = new URL(query)
-	} catch (_) {
-		return '' // ... error handling ?
-	}
-
-	const { hostname, protocol, pathname } = queryURL
-
-	if (url.startsWith('http')) {
-		return url
-	}
-
-	// It means (https:)//
-	if (url.startsWith('//')) {
-		return `${protocol}${url}`
-	}
-
-	// If icon from root, only add protocol & hostname
-	// Absolute path, also gets pathname
-	return `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname}${url}`
-}
-
-function sortClosestToSize(icons: Icon[], val: number): Icon[] {
-	const sorted = icons.sort((a, b) => Math.abs(a.size - val) - Math.abs(b.size - val))
-	return sorted
-}
-
-function sizesToNumber(str = ''): number {
-	return parseInt(str?.split('x')[0]) || 48
-}
-
-function getIconFromList(query: string): string | undefined {
-	const iconList = Object.entries(STATIC_ICONS.LIST)
-
-	for (const [path, matches] of iconList) {
-		for (const match of matches) {
-			if (query.includes(match)) return path
-		}
-	}
-}
-
-export function dataUriToBlob(uri: string): Blob {
-	const plain = atob(uri.replace('data:image/svg+xml;base64,', ''))
-	const blob = new Blob([plain], { type: 'image/svg+xml' })
-
-	return blob
-}
+// function addMissingProtocolSlash(url: string) {
+// 	const missingSlashRegex = /(https?:\/)(?!\/)([^\/]*)/
+// 	return url.replace(missingSlashRegex, (_, protocol, rest) => `${protocol}/${rest}`)
+// }

@@ -1,6 +1,6 @@
 export default {
 	/** Static icons are retrieved from this URL */
-	HOST: 'https://raw.githubusercontent.com/victrme/favicon-fetcher/img-assets/package/icons/',
+	HOST: 'https://raw.githubusercontent.com/victrme/favicon-fetcher/main/package/icons/',
 
 	/** List format is "filename": "urls to match" */
 	LIST: {
