@@ -5,7 +5,7 @@ export default {
 	/** List format is "filename": "urls to match" */
 	LIST: {
 		/* Do not modify */
-		'localhost.svg': ['http://localhost', 'localhost:', '127.0.0.1:', '0.0.0.0:'],
+		'localhost.svg': ['http://localhost', 'localhost:', 'http://127.0.0.1:', '127.0.0.1:'],
 
 		/* Can be modified */
 		'vscode.png': ['vscode.dev'],

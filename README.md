@@ -17,7 +17,7 @@ import favicon from '@victr/favicon-fetcher'
 
 window.onload = async function () {
   const img = document.getElementById('some-id')
-  const url = await favicon.url('https://github.com')
+  const url = await favicon.text('https://github.com')
 
   img.src = url
 }
@@ -27,8 +27,8 @@ window.onload = async function () {
 
 ```ts
 export default {
-  url: (query: string) => Promise<string>,
-  img: (query: string) => Promise<Blob>,
+  text: (query: string) => Promise<string>,
+  blob: (query: string) => Promise<Blob>,
 }
 ```
 
@@ -44,14 +44,4 @@ GET /text/:url
 
 ```HTTP
 GET /blob/:url
-```
-
-### Cloudflare Workers
-
-```bash
-# install
-pnpm install
-
-# debug
-pnpm dev
 ```

@@ -12,17 +12,12 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
-		"dev": "wrangler dev ./src/index.ts",
-		"deploy": "wrangler deploy ./src/index.ts --name favicon-fetcher --compatibility-date 2025-01-13",
-		"test": "vitest --run",
-		"build": "tsup"
+		"build": "tsup",
+		"dry-run": "tsup && npm publish --dry-run"
 	},
 	"devDependencies": {
 		"tsup": "^8.3.5",
-		"typescript": "^5.7.3",
-		"vite": "^6.0.7",
-		"vitest": "^2.1.8",
-		"wrangler": "^3.101.0"
+		"typescript": "^5.7.3"
 	},
 	"files": [
 		"/dist"

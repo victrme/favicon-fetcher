@@ -1,9 +1,13 @@
 {
 	"scripts": {
-		"demo": "npx http-server ./demo -c-1",
-		"dev": "pnpm cloudflare:dev",
 		"test": "vitest --run",
-		"build": "tsc"
+		"demo": "npx http-server ./demo -c-1",
+		"dev": "wrangler dev ./package/src/index.ts",
+		"deploy": "wrangler deploy ./package/src/index.ts --name favicon-fetcher --compatibility-date 2025-01-13"
+	},
+	"devDependencies": {
+		"vite": "^6.0.7",
+		"vitest": "^2.1.8"
 	},
 	"prettier": {
 		"semi": false,
