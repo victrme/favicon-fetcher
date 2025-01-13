@@ -43,25 +43,34 @@ async function faviconAsFetch(request: Request): Promise<Response> {
 		'Access-Control-Max-Age': 'public, max-age=604800, immutable',
 	})
 
-	const url = new URL(request.url ?? '')
-	const path = url.pathname
-	const endpoint = path.slice(0, path.indexOf('http'))
-	const type = endpoint.includes('/blob') ? 'blob' : 'text'
-	const query = path.slice(Math.max(0, path.indexOf('http')))
+	const { pathname } = new URL(request.url)
+	const type = pathname.includes('/blob/') ? 'blob' : pathname.includes('/text/') ? 'text' : undefined
+	const query = pathname.slice(pathname.indexOf(`/${type}/`) + 6)
 
-	let result: unknown = undefined
+	switch (type) {
+		case 'blob': {
+			const blob = await main(query, false, 'blob')
+			headers.set('Content-Type', blob.type)
+			return new Response(blob, { headers })
+		}
 
-	if (type === 'blob') {
-		const blob = await main(query, false, 'blob')
-		headers.set('Content-Type', blob.type)
-		result = blob
+		case 'text': {
+			const text = await main(query, false, 'text')
+			return new Response(text, { headers })
+		}
+
+		case undefined: {
+			return new Response('No valid type: must be "blob" or "text".', {
+				status: 400,
+			})
+		}
+
+		default: {
+			return new Response('Undefined error', {
+				status: 500,
+			})
+		}
 	}
-
-	if (type === 'text') {
-		result = await main(query, false, 'blob')
-	}
-
-	return new Response(undefined, { status: 400, headers })
 }
 
 //
