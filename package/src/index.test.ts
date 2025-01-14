@@ -6,11 +6,6 @@ const LOCALHOST = `${STATIC_ICONS.HOST}localhost.svg`
 const NOTFOUND = `${STATIC_ICONS.HOST}notfound.svg`
 
 describe('Static icons', function () {
-	it.todo('are both SVG data URIs', function () {
-		expect(NOTFOUND.startsWith('data:image/svg+xml;base64,')).toBe(true)
-		expect(NOTFOUND.startsWith('data:image/svg+xml;base64,')).toBe(true)
-	})
-
 	it('has valid type', function () {
 		expectTypeOf(STATIC_ICONS.LIST).toBeObject()
 
@@ -23,14 +18,14 @@ describe('Static icons', function () {
 })
 
 describe('Fetching', function () {
-	it.todo('returns notfound icon on bad query', async function () {
+	it('returns notfound icon on bad query', async function () {
 		const request = new Request('http://0.0.0.0:0000/text/drgrdrdhwrdehrwjherwjh')
 		const response = await favicon.fetch(request)
-		expect(response.status).toBe(400)
+		expect(response.status).toBe(200)
 		expect(await response.text()).toBe(NOTFOUND)
 	})
 
-	it.todo('returns notfound icon when no protocols are specified', async function () {
+	it('returns notfound icon when no protocols are specified', async function () {
 		const response = await favicon.fetch(new Request('http://0.0.0.0:0000/text/victr.me/'))
 		expect(response.status).toBe(200)
 		expect(await response.text()).toBe(NOTFOUND)

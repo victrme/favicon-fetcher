@@ -54,19 +54,19 @@ async function faviconAsFetch(request: Request): Promise<Response> {
 		'Access-Control-Max-Age': 'public, max-age=604800, immutable',
 	})
 
-	let type: string | undefined = undefined
+	let query: string = ''
+	let type: string = ''
+
 	if (url.pathname.includes('/blob/')) type = 'blob'
 	if (url.pathname.includes('/text/')) type = 'text'
 	if (url.pathname.includes('/list/')) type = 'list'
 
-	const query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + 6)
-
 	try {
+		query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + 6)
 		new URL(query)
-	} catch (_) {
-		return new Response('Query is not a valid URL', {
-			status: 400,
-		})
+	} catch (error) {
+		console.error(error)
+		query = ''
 	}
 
 	switch (type) {
@@ -87,7 +87,7 @@ async function faviconAsFetch(request: Request): Promise<Response> {
 			return new Response(JSON.stringify(list), { headers })
 		}
 
-		case undefined: {
+		case '': {
 			return new Response('No valid type: must be "blob", "text" or "list"', {
 				status: 400,
 			})
