@@ -1,7 +1,7 @@
-import { fullpath, getIconFromList, sortClosestToSize } from './helpers'
-import { fetchIcon, fetchBody, fetchManifest } from './fetchers'
-import { Icon, parseHead, parseManifest } from './parsers'
-import STATIC_ICONS from './icons'
+import { fullpath, getIconFromList, sortClosestToSize } from "./helpers"
+import { fetchBody, fetchIcon, fetchManifest } from "./fetchers"
+import { Icon, parseHead, parseManifest } from "./parsers"
+import STATIC_ICONS from "./icons"
 
 export default {
 	text: faviconAsText,
@@ -16,7 +16,7 @@ export default {
  * @returns
  */
 async function faviconAsText(query: string, fast?: true) {
-	return await main(query, !!fast, 'text')
+	return await main(query, !!fast, "text")
 }
 
 /**
@@ -25,7 +25,7 @@ async function faviconAsText(query: string, fast?: true) {
  * @returns
  */
 async function faviconAsBlob(query: string, fast?: true) {
-	return await main(query, !!fast, 'blob')
+	return await main(query, !!fast, "blob")
 }
 
 /**
@@ -48,53 +48,53 @@ async function listAvailableFavicons(query: string): Promise<string[]> {
 async function faviconAsFetch(request: Request): Promise<Response> {
 	const url = new URL(request.url)
 	const headers = new Headers({
-		'Content-Type': 'text/plain',
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Methods': 'GET',
-		'Access-Control-Max-Age': 'public, max-age=604800, immutable',
+		"Content-Type": "text/plain",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Methods": "GET",
+		"Access-Control-Max-Age": "public, max-age=604800, immutable",
 	})
 
-	let query: string = ''
-	let type: string = ''
+	let query: string = ""
+	let type: string = ""
 
-	if (url.pathname.includes('/blob/')) type = 'blob'
-	if (url.pathname.includes('/text/')) type = 'text'
-	if (url.pathname.includes('/list/')) type = 'list'
+	if (url.pathname.includes("/blob/")) type = "blob"
+	if (url.pathname.includes("/text/")) type = "text"
+	if (url.pathname.includes("/list/")) type = "list"
 
 	try {
 		query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + 6)
 		new URL(query)
-	} catch (error) {
-		console.error(error)
-		query = ''
+	} catch (_) {
+		console.error("Query is invalid URL")
+		query = ""
 	}
 
 	switch (type) {
-		case 'blob': {
-			const blob = await main(query, false, 'blob')
-			headers.set('Content-Type', blob.type)
+		case "blob": {
+			const blob = await main(query, false, "blob")
+			headers.set("Content-Type", blob.type)
 			return new Response(blob, { headers })
 		}
 
-		case 'text': {
-			const text = await main(query, false, 'text')
+		case "text": {
+			const text = await main(query, false, "text")
 			return new Response(text, { headers })
 		}
 
-		case 'list': {
+		case "list": {
 			const list = await listAvailableFavicons(query)
-			headers.set('Content-Type', 'application/json')
+			headers.set("Content-Type", "application/json")
 			return new Response(JSON.stringify(list), { headers })
 		}
 
-		case '': {
+		case "": {
 			return new Response('No valid type: must be "blob", "text" or "list"', {
 				status: 400,
 			})
 		}
 
 		default: {
-			return new Response('Undefined error', {
+			return new Response("Undefined error", {
 				status: 500,
 			})
 		}
@@ -105,19 +105,19 @@ async function faviconAsFetch(request: Request): Promise<Response> {
 //
 //
 
-async function main(query: string, fast: boolean, as: 'blob'): Promise<Blob>
-async function main(query: string, fast: boolean, as: 'text'): Promise<string>
-async function main(query: string, fast: boolean, as: 'blob' | 'text') {
+async function main(query: string, fast: boolean, as: "blob"): Promise<Blob>
+async function main(query: string, fast: boolean, as: "text"): Promise<string>
+async function main(query: string, fast: boolean, as: "blob" | "text") {
 	const found = await createFaviconList(query)
 	const hasOneIcon = found.length === 1
 	const useFastMode = found.length > 0 && fast
 
 	if (hasOneIcon || useFastMode) {
-		if (as === 'text') {
+		if (as === "text") {
 			return found[0]
 		}
 
-		if (as === 'blob') {
+		if (as === "blob") {
 			const blob = await fetchIcon(found[0])
 
 			if (blob) {
@@ -125,29 +125,29 @@ async function main(query: string, fast: boolean, as: 'blob' | 'text') {
 			}
 
 			if (useFastMode) {
-				throw new Error('Fast mode. Could not find valid favicon')
+				throw new Error("Fast mode. Could not find valid favicon")
 			}
 		}
 
-		throw new Error('Static icon could not load. Wrong host url ?')
+		throw new Error("Static icon could not load. Wrong host url ?")
 	}
 
 	for (const url of found) {
 		const blob = await fetchIcon(url)
 
-		if (blob?.type.includes('image')) {
-			if (as === 'text') return url
-			if (as === 'blob') return blob
+		if (blob?.type.includes("image")) {
+			if (as === "text") return url
+			if (as === "blob") return blob
 		}
 	}
 
-	throw new Error('No valid icon found in list')
+	throw new Error("No valid icon found in list")
 }
 
 async function createFaviconList(query: string): Promise<string[]> {
 	// Step 1: Return not found when empty
 
-	if (query === '') {
+	if (query === "") {
 		return [`${STATIC_ICONS.HOST}notfound.svg`]
 	}
 
@@ -190,7 +190,7 @@ async function createFaviconList(query: string): Promise<string[]> {
 				href: `${STATIC_ICONS.HOST}notfound.svg`,
 				size: -2048,
 				touch: false,
-			}
+			},
 		)
 	}
 

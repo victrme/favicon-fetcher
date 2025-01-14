@@ -10,38 +10,41 @@ Test it here: https://favicon.victr.me
 npm i @victr/favicon-fetcher
 ```
 
-### Example use
+### Use
 
-```js
-import favicon from '@victr/favicon-fetcher'
+```ts
+import favicon from "@victr/favicon-fetcher"
 
 window.onload = async function () {
-  const img = document.getElementById('some-id')
-  const url = await favicon.text('https://github.com')
-
-  img.src = url
+	const img = document.getElementById("some-id")
+	const url = await favicon.text("https://github.com")
+	img.src = url
 }
 ```
 
-### Export type
+### Types
 
 ```ts
 export default {
-  text: (query: string) => Promise<string>,
-  blob: (query: string) => Promise<Blob>,
+  text: (query: string, fast?: true) => Promise<string>
+  blob: (query: string, fast?: true) => Promise<Blob>
+  list: (query: string) => Promise<string[]>
+  fetch: (request: Request) => Promise<Response>
 }
 ```
 
-## As API
+## Cloudflare workers
 
-### Endpoints
+Use can easily deploy favicon-fetcher as a worker because it uses the same `export fetch()`.\
+To do so:
 
-Protocols need to be included in the `:url` query. You can get your favicon as a plaintext url or a blob:
+```bash
+npm install --global wrangler
 
-```HTTP
-GET /text/:url
-```
+# added 173 packages in 11s
 
-```HTTP
-GET /blob/:url
+wrangler deploy ./package/src/index.ts --name favicon-fetcher --compatibility-date 2025-01-13
+
+# Total Upload: 9.70 KiB / gzip: 3.15 KiB
+# Uploaded favicon-fetcher (8.11 sec)
 ```

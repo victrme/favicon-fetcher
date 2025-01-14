@@ -1,31 +1,31 @@
-import STATIC_ICONS from './icons'
-import { Icon } from './parsers'
+import STATIC_ICONS from "./icons"
+import { Icon } from "./parsers"
 
 export function fullpath(url: string, query: string): string {
-	if (!url) return ''
+	if (!url) return ""
 
 	let queryURL: URL
 
 	try {
 		queryURL = new URL(query)
 	} catch (_) {
-		return '' // ... error handling ?
+		return "" // ... error handling ?
 	}
 
 	const { hostname, protocol, pathname } = queryURL
 
-	if (url.startsWith('http')) {
+	if (url.startsWith("http")) {
 		return url
 	}
 
 	// It means (https:)//
-	if (url.startsWith('//')) {
+	if (url.startsWith("//")) {
 		return `${protocol}${url}`
 	}
 
 	// If icon from root, only add protocol & hostname
 	// Absolute path, also gets pathname
-	return `${protocol}//${hostname}${url.startsWith('/') ? '' : pathname}${url}`
+	return `${protocol}//${hostname}${url.startsWith("/") ? "" : pathname}${url}`
 }
 
 export function sortClosestToSize(icons: Icon[], val: number): Icon[] {
@@ -33,8 +33,8 @@ export function sortClosestToSize(icons: Icon[], val: number): Icon[] {
 	return sorted
 }
 
-export function sizesToNumber(str = ''): number {
-	return parseInt(str?.split('x')[0]) || 48
+export function sizesToNumber(str = ""): number {
+	return parseInt(str?.split("x")[0]) || 48
 }
 
 export function getIconFromList(query: string): string | undefined {

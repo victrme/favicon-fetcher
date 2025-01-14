@@ -12,10 +12,9 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
-		"build": "tsup",
-		"dry-run": "tsup && npm publish --dry-run"
+		"build": "tsup"
 	},
-	"devDependencies": {
+	"dependencies": {
 		"tsup": "^8.3.5",
 		"typescript": "^5.7.3"
 	},
