@@ -1,0 +1,6 @@
+{
+	"name": "@victr/favicon-fetcher",
+	"version": "3.0.0",
+	"license": "MIT",
+	"exports": "./src/index.ts"
+}

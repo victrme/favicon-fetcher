@@ -15,7 +15,7 @@ export default {
  * @param fast - Fast mode does not check if found URL is valid.
  * @returns
  */
-async function faviconAsText(query: string, fast?: true) {
+async function faviconAsText(query: string, fast?: true): Promise<string> {
 	return await main(query, !!fast, "text")
 }
 
@@ -24,7 +24,7 @@ async function faviconAsText(query: string, fast?: true) {
  * @param fast - Fast mode only load first favicon found
  * @returns
  */
-async function faviconAsBlob(query: string, fast?: true) {
+async function faviconAsBlob(query: string, fast?: true): Promise<Blob> {
 	return await main(query, !!fast, "blob")
 }
 
