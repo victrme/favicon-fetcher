@@ -40,7 +40,8 @@ async function listAvailableFavicons(query: string): Promise<string[]> {
 /**
  * @param request A GET request with the return type and query as its pathname
  * @returns A response with a 30 days cache control
- * @example // Get wikipedia's favicon as text
+ * @example
+ * // Get wikipedia's favicon as text
  * const url = "http://example.com/text/https://wikipedia.org"
  * const resp = await favicon.fetch(url)
  * const src = await resp.text()
