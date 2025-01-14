@@ -7,6 +7,7 @@ export default {
 	text: faviconAsText,
 	blob: faviconAsBlob,
 	fetch: faviconAsFetch,
+	list: listAvailableFavicons,
 }
 
 /**
@@ -28,6 +29,15 @@ async function faviconAsBlob(query: string, fast?: true) {
 }
 
 /**
+ * @param query - Must add protocol in order to work (http:// or https://)
+ * @returns
+ */
+async function listAvailableFavicons(query: string): Promise<string[]> {
+	const list = await createFaviconList(query)
+	return list
+}
+
+/**
  * @param request A GET request with the return type and query as its pathname
  * @returns A response with a 30 days cache control
  * @example // Get wikipedia's favicon as text
@@ -36,6 +46,7 @@ async function faviconAsBlob(query: string, fast?: true) {
  * const src = await resp.text()
  */
 async function faviconAsFetch(request: Request): Promise<Response> {
+	const url = new URL(request.url)
 	const headers = new Headers({
 		'Content-Type': 'text/plain',
 		'Access-Control-Allow-Origin': '*',
@@ -43,9 +54,20 @@ async function faviconAsFetch(request: Request): Promise<Response> {
 		'Access-Control-Max-Age': 'public, max-age=604800, immutable',
 	})
 
-	const { pathname } = new URL(request.url)
-	const type = pathname.includes('/blob/') ? 'blob' : pathname.includes('/text/') ? 'text' : undefined
-	const query = pathname.slice(pathname.indexOf(`/${type}/`) + 6)
+	let type: string | undefined = undefined
+	if (url.pathname.includes('/blob/')) type = 'blob'
+	if (url.pathname.includes('/text/')) type = 'text'
+	if (url.pathname.includes('/list/')) type = 'list'
+
+	const query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + 6)
+
+	try {
+		new URL(query)
+	} catch (_) {
+		return new Response('Query is not a valid URL', {
+			status: 400,
+		})
+	}
 
 	switch (type) {
 		case 'blob': {
@@ -59,8 +81,14 @@ async function faviconAsFetch(request: Request): Promise<Response> {
 			return new Response(text, { headers })
 		}
 
+		case 'list': {
+			const list = await listAvailableFavicons(query)
+			headers.set('Content-Type', 'application/json')
+			return new Response(JSON.stringify(list), { headers })
+		}
+
 		case undefined: {
-			return new Response('No valid type: must be "blob" or "text".', {
+			return new Response('No valid type: must be "blob", "text" or "list"', {
 				status: 400,
 			})
 		}
