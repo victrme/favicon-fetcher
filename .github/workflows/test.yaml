@@ -1,22 +1,14 @@
-name: Run tests
+name: CI
 
-on:
-    push:
-        paths:
-            - "package/**"
-        branches:
-            - main
+on: push
 
 jobs:
-    test:
+    build:
         runs-on: ubuntu-latest
-
         steps:
-            - uses: actions/checkout@v2
-
+            - uses: actions/checkout@v3
             - uses: denoland/setup-deno@v2
-                with:
-                    deno-version: v1.15.0
+              with:
+                  deno-version: v2.x
 
-            - run: deno install
-            - run: deno task test
+            - run: deno test --allow-net
