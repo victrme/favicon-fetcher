@@ -32,9 +32,7 @@ Deno.test("steamcharts.com", async function () {
 })
 
 Deno.test("guide.michelin.com", async function () {
-	const request = new Request(
-		"http://localhost/text/https://guide.michelin.com/fr/fr/restaurants",
-	)
+	const request = new Request("http://localhost/text/https://guide.michelin.com/fr/fr/restaurants")
 	const response = await favicon.fetch(request)
 
 	expect(response.status).toBe(200)
