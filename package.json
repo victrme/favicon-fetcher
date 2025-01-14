@@ -1,6 +1,6 @@
 {
 	"name": "@victr/favicon-fetcher",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"license": "MIT",
@@ -12,9 +12,11 @@
 		"url": "https://github.com/victrme/favicon-fetcher"
 	},
 	"scripts": {
+		"demo": "npx http-server ./demo -c-1",
+		"dev": "npx wrangler dev ./package/src/index.ts",
 		"build": "tsup"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"tsup": "^8.3.5",
 		"typescript": "^5.7.3"
 	},
@@ -31,7 +33,7 @@
 	},
 	"tsup": {
 		"entry": [
-			"src/index.ts"
+			"package/src/index.ts"
 		],
 		"format": "esm",
 		"dts": true,

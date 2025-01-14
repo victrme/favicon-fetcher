@@ -16,9 +16,9 @@ npm i @victr/favicon-fetcher
 import favicon from "@victr/favicon-fetcher"
 
 window.onload = async function () {
-	const img = document.getElementById("some-id")
-	const url = await favicon.text("https://github.com")
-	img.src = url
+  const img = document.getElementById("some-id")
+  const url = await favicon.text("https://github.com")
+  img.src = url
 }
 ```
 
@@ -31,6 +31,33 @@ export default {
   list: (query: string) => Promise<string[]>
   fetch: (request: Request) => Promise<Response>
 }
+```
+
+## Publish
+
+```bash
+# Build first, using Deno & tsup
+deno i
+deno task build
+
+# ESM dist/index.js 8.95 KB
+# ESM ⚡️ Build success in 272ms
+# DTS ⚡️ Build success in 327ms
+# DTS dist/index.d.ts 1.20 KB
+
+# Publish on npmjs.com
+npm publish
+
+# npm notice 📦  @victr/favicon-fetcher@x.x.x
+# ...
+# + @victr/favicon-fetcher@x.x.x
+
+
+# Publish on jsr.io
+deno publish
+
+# Publishing @victr/favicon-fetcher@x.x.x ...
+# Successfully published @victr/favicon-fetcher@x.x.x
 ```
 
 ## Cloudflare workers

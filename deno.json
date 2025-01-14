@@ -1,16 +1,11 @@
 {
-	"tasks": {
-		"test": "deno test --allow-net",
-		"demo": "npx http-server ./demo -c-1",
-		"dev": "npx wrangler dev ./package/src/index.ts",
-		"dry-run": "tsup && npm publish --dry-run"
-	},
+	"name": "@victr/favicon-fetcher",
+	"version": "3.0.1",
+	"license": "MIT",
+	"exports": "./package/src/index.ts",
 	"imports": {
 		"expect": "jsr:@std/expect@^1.0.11"
 	},
-	"workspace": [
-		"./package"
-	],
 	"fmt": {
 		"singleQuote": false,
 		"semiColons": false,
