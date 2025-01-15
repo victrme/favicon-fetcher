@@ -4,12 +4,6 @@ Favicon fetcher finds sites favicons and fetches them fast
 
 Test it here: https://favicon.victr.me
 
-## Install
-
-```bash
-npm i @victr/favicon-fetcher
-```
-
 ### Use
 
 ```ts
@@ -46,7 +40,7 @@ deno task build
 # DTS dist/index.d.ts 1.20 KB
 
 # Publish on npmjs.com
-npm publish
+npm publish --access public
 
 # npm notice 📦  @victr/favicon-fetcher@x.x.x
 # ...

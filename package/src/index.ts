@@ -1,8 +1,26 @@
 import { fullpath, getIconFromList, sortClosestToSize } from "./helpers"
 import { fetchBody, fetchIcon, fetchManifest } from "./fetchers"
-import { Icon, parseHead, parseManifest } from "./parsers"
+import { parseHead, parseManifest } from "./parsers"
 import STATIC_ICONS from "./icons"
 
+import type { Icon } from "./parsers.ts"
+
+/**
+ * Find the best favicon for the query specified.
+ *
+ * @param text - Receive a favicon as a string URL
+ * @param blob - Receive a favicon as a blob (image)
+ * @param fetch - Accepts a Request, returns a blob response
+ * @param list - Get all favicon URL found for the query specified
+ *
+ * @example
+ * import favicon from "@victr/favicon-fetcher"
+ * await favicon.text("...")
+ *
+ * @example
+ * import { faviconAsText } from "@victr/favicon-fetcher"
+ * await faviconAsText("...")
+ */
 export default {
 	text: faviconAsText,
 	blob: faviconAsBlob,
@@ -11,28 +29,32 @@ export default {
 }
 
 /**
+ * Specify a website, receive a favicon as a string URL
+ *
  * @param query - Must add protocol in order to work (http:// or https://)
  * @param fast - Fast mode does not check if found URL is valid.
- * @returns
+ * @returns A favicon URL found for the query specified
  */
-async function faviconAsText(query: string, fast?: true): Promise<string> {
+export async function faviconAsText(query: string, fast?: true): Promise<string> {
 	return await main(query, !!fast, "text")
 }
 
 /**
+ * Specify a website, receive a favicon as a blob (image)
+ *
  * @param query - Must add protocol in order to work (http:// or https://)
  * @param fast - Fast mode only load first favicon found
- * @returns
+ * @returns A favicon found for the query specified
  */
-async function faviconAsBlob(query: string, fast?: true): Promise<Blob> {
+export async function faviconAsBlob(query: string, fast?: true): Promise<Blob> {
 	return await main(query, !!fast, "blob")
 }
 
 /**
  * @param query - Must add protocol in order to work (http:// or https://)
- * @returns
+ * @returns All favicon URL found for the query specified
  */
-async function listAvailableFavicons(query: string): Promise<string[]> {
+export async function listAvailableFavicons(query: string): Promise<string[]> {
 	const list = await createFaviconList(query)
 	return list
 }
@@ -46,7 +68,7 @@ async function listAvailableFavicons(query: string): Promise<string[]> {
  * const resp = await favicon.fetch(url)
  * const src = await resp.text()
  */
-async function faviconAsFetch(request: Request): Promise<Response> {
+export async function faviconAsFetch(request: Request): Promise<Response> {
 	const url = new URL(request.url)
 	const headers = new Headers({
 		"Content-Type": "text/plain",
