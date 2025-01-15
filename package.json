@@ -1,6 +1,6 @@
 {
 	"name": "@victr/favicon-fetcher",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"author": "Victor Azevedo",
 	"description": "Favicon fetcher finds favicons and flawlessly fetches them fast",
 	"license": "MIT",
