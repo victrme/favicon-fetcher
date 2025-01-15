@@ -6,12 +6,12 @@ import STATIC_ICONS from "./icons"
 import type { Icon } from "./parsers.ts"
 
 /**
- * Find the best favicon for the query specified.
+ * Find the best favicon for the specified query.
  *
  * @param text - Receive a favicon as a string URL
  * @param blob - Receive a favicon as a blob (image)
- * @param fetch - Accepts a Request, returns a blob response
- * @param list - Get all favicon URL found for the query specified
+ * @param fetch - Accepts a Request. /text/ returns text, /blob/ a blob
+ * @param list - Get all favicon URL found for the specified query
  *
  * @example
  * import favicon from "@victr/favicon-fetcher"
@@ -51,6 +51,8 @@ export async function faviconAsBlob(query: string, fast?: true): Promise<Blob> {
 }
 
 /**
+ * Specify a website, receive a list of favicon URLs
+ *
  * @param query - Must add protocol in order to work (http:// or https://)
  * @returns All favicon URL found for the query specified
  */
@@ -60,6 +62,8 @@ export async function listAvailableFavicons(query: string): Promise<string[]> {
 }
 
 /**
+ * Request a favicon using the fetch syntax.
+ *
  * @param request A GET request with the return type and query as its pathname
  * @returns A response with a 30 days cache control
  * @example
