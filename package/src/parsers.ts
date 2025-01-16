@@ -1,5 +1,5 @@
-import { sizesToNumber } from "./helpers"
-import { Manifest } from "./fetchers"
+import { log, sizesToNumber } from "./helpers"
+import type { Manifest } from "./fetchers"
 
 export interface Icon {
 	href: string
@@ -12,9 +12,13 @@ export interface Head {
 	icons: Icon[]
 }
 
-export function parseManifest({ icons }: Manifest): Icon[] {
-	if (icons) {
-		return icons.map((icon) => ({
+export function parseManifest(manifest: Manifest): Icon[] {
+	if (log.item.MANIFEST) {
+		console.log(manifest)
+	}
+
+	if (manifest.icons) {
+		return manifest.icons.map((icon) => ({
 			href: icon.src,
 			size: sizesToNumber(icon.sizes),
 		}))
@@ -38,6 +42,10 @@ export function parseHead(html: string): Head {
 			.join()
 	}
 
+	if (log.item.HEAD) {
+		console.log(html)
+	}
+
 	const links = html.split("<link").map((str) => `<link ${str.slice(0, str.indexOf(">"))}>`)
 	const metas = html.split("<meta").map((str) => `<meta ${str.slice(0, str.indexOf(">"))}>`)
 
@@ -51,6 +59,10 @@ export function parseHead(html: string): Head {
 		const name = sliceAttr(meta, 'name="', '"').toLocaleLowerCase()
 		const content = sliceAttr(meta, 'content="', '"')
 
+		if (log.item.METAS) {
+			console.log(meta)
+		}
+
 		if (name.includes("apple-touch-icon")) {
 			result.icons.push({ href: content, size: 100, touch: true })
 		}
@@ -60,6 +72,10 @@ export function parseHead(html: string): Head {
 		const rel = sliceAttr(link, 'rel="', '"').toLocaleLowerCase()
 		const href = sliceAttr(link, 'href="', '"')
 		const sizes = sliceAttr(link, 'sizes="', '"').toLocaleLowerCase()
+
+		if (log.item.LINKS) {
+			console.log(link)
+		}
 
 		if (rel.includes("manifest")) {
 			result.manifest = href

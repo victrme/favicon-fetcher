@@ -1,4 +1,4 @@
-import { fullpath, getIconFromList, sortClosestToSize } from "./helpers"
+import { fullpath, getIconFromList, log, sortClosestToSize } from "./helpers"
 import { fetchBody, fetchIcon, fetchManifest } from "./fetchers"
 import { parseHead, parseManifest } from "./parsers"
 import STATIC_ICONS from "./icons"
@@ -88,13 +88,7 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 	if (url.pathname.includes("/text/")) type = "text"
 	if (url.pathname.includes("/list/")) type = "list"
 
-	try {
-		query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + 6)
-		new URL(query)
-	} catch (_) {
-		console.error("Query is invalid URL")
-		query = ""
-	}
+	query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + 6)
 
 	switch (type) {
 		case "blob": {
@@ -135,6 +129,8 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 async function main(query: string, fast: boolean, as: "blob"): Promise<Blob>
 async function main(query: string, fast: boolean, as: "text"): Promise<string>
 async function main(query: string, fast: boolean, as: "blob" | "text") {
+	log.init("ERRORS")
+
 	const found = await createFaviconList(query)
 	const hasOneIcon = found.length === 1
 	const useFastMode = found.length > 0 && fast
@@ -172,9 +168,16 @@ async function main(query: string, fast: boolean, as: "blob" | "text") {
 }
 
 async function createFaviconList(query: string): Promise<string[]> {
-	// Step 1: Return not found when empty
+	// Step 1: Return not found with bad query
 
-	if (query === "") {
+	try {
+		new URL(query)
+	} catch (_error) {
+		if (log.item.ERRORS) {
+			console.error(query)
+			console.error("Query is invalid")
+		}
+
 		return [`${STATIC_ICONS.HOST}notfound.svg`]
 	}
 
@@ -225,10 +228,3 @@ async function createFaviconList(query: string): Promise<string[]> {
 
 	return icons.map((icon) => fullpath(icon.href, query))
 }
-
-// const target = addMissingProtocolSlash(path.slice(Math.max(0, path.indexOf('http'))))
-
-// function addMissingProtocolSlash(url: string) {
-// 	const missingSlashRegex = /(https?:\/)(?!\/)([^\/]*)/
-// 	return url.replace(missingSlashRegex, (_, protocol, rest) => `${protocol}/${rest}`)
-// }

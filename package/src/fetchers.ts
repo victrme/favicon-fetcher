@@ -1,3 +1,5 @@
+import { log } from "./helpers.ts"
+
 export interface Manifest {
 	icons?: {
 		src: string
@@ -14,8 +16,7 @@ const headers: HeadersInit = {
 	"Sec-Fetch-Dest": "document",
 	"Sec-Fetch-Site": "none",
 	"Sec-Fetch-User": "?1",
-	"User-Agent":
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+	"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
 }
 
 export async function fetchBody(url: string): Promise<string | undefined> {
@@ -24,8 +25,10 @@ export async function fetchBody(url: string): Promise<string | undefined> {
 		const resp = await fetch(url, { headers, signal })
 		const text = await resp.text()
 		return text
-	} catch (_) {
-		console.warn("Can't fetch HTML: " + url)
+	} catch (_error) {
+		if (log.item.ERRORS) {
+			console.error(url, "Can't fetch HTML")
+		}
 	}
 }
 
@@ -35,17 +38,25 @@ export async function fetchManifest(url: string): Promise<Manifest | undefined> 
 		const resp = await fetch(url, { headers, signal })
 		const json = await resp.json()
 		return json
-	} catch (_) {
-		console.warn("Can't fetch manifest: " + url)
+	} catch (_error) {
+		if (log.item.ERRORS) {
+			console.error(url, "Can't fetch manifest")
+		}
 	}
 }
 
 export async function fetchIcon(url: string): Promise<Blob | undefined> {
-	const signal = AbortSignal.timeout(2500)
-	const resp = await fetch(url, { signal, headers })
+	try {
+		const signal = AbortSignal.timeout(2500)
+		const resp = await fetch(url, { signal, headers })
 
-	if (resp.status === 200) {
-		const blob = await resp.blob()
-		return blob
+		if (resp.status === 200) {
+			const blob = await resp.blob()
+			return blob
+		}
+	} catch (_error) {
+		if (log.item.ERRORS) {
+			console.error(url, "Can't fetch favicon")
+		}
 	}
 }
