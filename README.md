@@ -1,10 +1,12 @@
-# favicon fetcher
+# Favicon Fetcher
 
 Favicon fetcher finds sites favicons and fetches them fast
 
-Test it here: https://favicon.victr.me
+- Test it here: https://favicon.victr.me
+- On JSR: https://jsr.io/@victr/favicon-fetcher
+- On NPM: https://www.npmjs.com/package/@victr/favicon-fetcher
 
-### Use
+## Use
 
 ```ts
 import favicon from "@victr/favicon-fetcher"
@@ -38,16 +40,20 @@ deno task build
 # ESM ⚡️ Build success in 272ms
 # DTS ⚡️ Build success in 327ms
 # DTS dist/index.d.ts 1.20 KB
+```
 
-# Publish on npmjs.com
+On npmjs.com
+
+```bash
 npm publish --access public
 
 # npm notice 📦  @victr/favicon-fetcher@x.x.x
-# ...
 # + @victr/favicon-fetcher@x.x.x
+```
 
+On jsr.io
 
-# Publish on jsr.io
+```bash
 deno publish
 
 # Publishing @victr/favicon-fetcher@x.x.x ...
