@@ -78,7 +78,7 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 		"Content-Type": "text/plain",
 		"Access-Control-Allow-Origin": "*",
 		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Max-Age": "public, max-age=604800, immutable",
+		"Cache-Control": "public, max-age=604800, immutable",
 	})
 
 	let query: string = ""
@@ -129,7 +129,7 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 async function main(query: string, fast: boolean, as: "blob"): Promise<Blob>
 async function main(query: string, fast: boolean, as: "text"): Promise<string>
 async function main(query: string, fast: boolean, as: "blob" | "text") {
-	log.init("ERRORS")
+	// log.init("ERRORS")
 
 	const found = await createFaviconList(query)
 	const hasOneIcon = found.length === 1
