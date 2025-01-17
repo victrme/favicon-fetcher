@@ -10,6 +10,7 @@ export default {
 		/* Can be modified */
 		"vscode.png": ["vscode.dev"],
 		"designer.microsoft.png": ["designer.microsoft.com"],
+		"teams.microsoft.png": ["teams.microsoft.com"],
 		"copilot.microsoft.svg": ["https://www.bing.com/images/create", "copilot.microsoft.com"],
 		"twitter.png": ["twitter.com"],
 		"youtube.png": ["youtube.com"],
