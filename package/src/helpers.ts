@@ -23,17 +23,22 @@ function initLogs(...items: LogItems[]): void {
 }
 
 export function fullpath(url: string, query: string): string {
-	if (!url) return ""
-
-	let queryURL: URL
-
-	try {
-		queryURL = new URL(query)
-	} catch (_) {
-		return "" // ... error handling ?
+	if (url.startsWith('data:image/')) {
+		return url
 	}
 
-	const { hostname, protocol, pathname } = queryURL
+	try {
+		new URL(query)
+	} catch (_error) {
+		if (log.item.ERRORS) {
+			console.log(query, url)
+			console.log("Cannot create a valid URL")
+		}
+
+		return ""
+	}
+
+	const { hostname, protocol, pathname } = new URL(query)
 
 	if (url.startsWith("http")) {
 		return url
