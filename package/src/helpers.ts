@@ -39,7 +39,8 @@ export function fullpath(url: string, query: string): string {
 		return ""
 	}
 
-	const { pathname, hostname, protocol } = new URL(query)
+	const { protocol, origin } = new URL(query)
+	let { pathname } = new URL(query)
 
 	if (url.startsWith("http")) {
 		return url
@@ -50,10 +51,14 @@ export function fullpath(url: string, query: string): string {
 		return `${protocol}${url}`
 	}
 
+	if (pathname === "/") {
+		pathname = ""
+	}
+
 	if (url.startsWith("/")) {
-		return `${protocol}//${hostname}${pathname}${url}`
+		return `${origin}${url}`
 	} else {
-		return `${protocol}//${hostname}/${url}`
+		return `${origin}${pathname}${url}`
 	}
 }
 
