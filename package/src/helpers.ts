@@ -8,6 +8,7 @@ const logItems = {
 	METAS: false,
 	LINKS: false,
 	MANIFEST: false,
+	PATHS: false,
 	ERRORS: false,
 }
 
@@ -23,7 +24,7 @@ function initLogs(...items: LogItems[]): void {
 }
 
 export function fullpath(url: string, query: string): string {
-	if (url.startsWith('data:image/')) {
+	if (url.startsWith("data:image/")) {
 		return url
 	}
 
@@ -38,7 +39,7 @@ export function fullpath(url: string, query: string): string {
 		return ""
 	}
 
-	const { hostname, protocol, pathname } = new URL(query)
+	const { pathname, hostname, protocol } = new URL(query)
 
 	if (url.startsWith("http")) {
 		return url
@@ -49,9 +50,11 @@ export function fullpath(url: string, query: string): string {
 		return `${protocol}${url}`
 	}
 
-	// If icon from root, only add protocol & hostname
-	// Absolute path, also gets pathname
-	return `${protocol}//${hostname}${url.startsWith("/") ? "" : pathname}${url}`
+	if (url.startsWith("/")) {
+		return `${protocol}//${hostname}${pathname}${url}`
+	} else {
+		return `${protocol}//${hostname}/${url}`
+	}
 }
 
 export function sortClosestToSize(icons: Icon[], val: number): Icon[] {
@@ -72,10 +75,3 @@ export function getIconFromList(query: string): string | undefined {
 		}
 	}
 }
-
-// const target = addMissingProtocolSlash(path.slice(Math.max(0, path.indexOf('http'))))
-
-// function addMissingProtocolSlash(url: string) {
-// 	const missingSlashRegex = /(https?:\/)(?!\/)([^\/]*)/
-// 	return url.replace(missingSlashRegex, (_, protocol, rest) => `${protocol}/${rest}`)
-// }

@@ -129,7 +129,7 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 async function main(query: string, fast: boolean, as: "blob"): Promise<Blob>
 async function main(query: string, fast: boolean, as: "text"): Promise<string>
 async function main(query: string, fast: boolean, as: "blob" | "text") {
-	log.init()
+	// log.init("PATHS")
 
 	const found = await createFaviconList(query)
 	const hasOneIcon = found.length === 1
@@ -209,7 +209,6 @@ async function createFaviconList(query: string): Promise<string[]> {
 		}
 	}
 
-
 	if (icons.length === 0) {
 		icons.push(
 			{
@@ -227,5 +226,11 @@ async function createFaviconList(query: string): Promise<string[]> {
 
 	// Step 4: Return list of href
 
-	return icons.map((icon) => fullpath(icon.href, query))
+	const fullpathIcons = icons.map((icon) => fullpath(icon.href, query))
+
+	if (log.item.PATHS) {
+		console.log(fullpathIcons)
+	}
+
+	return fullpathIcons
 }
