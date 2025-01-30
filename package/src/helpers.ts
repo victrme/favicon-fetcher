@@ -39,8 +39,7 @@ export function fullpath(url: string, query: string): string {
 		return ""
 	}
 
-	const { protocol, origin } = new URL(query)
-	let { pathname } = new URL(query)
+	const { protocol, origin, pathname } = new URL(query)
 
 	if (url.startsWith("http")) {
 		return url
@@ -51,15 +50,12 @@ export function fullpath(url: string, query: string): string {
 		return `${protocol}${url}`
 	}
 
-	if (pathname === "/") {
-		pathname = ""
-	}
-
-	if (url.startsWith("/")) {
-		return `${origin}${url}`
-	} else {
+	// Relative path and not at root
+	if (!url.startsWith("/") && pathname !== "/") {
 		return `${origin}${pathname}${url}`
 	}
+
+	return `${origin}${url}`
 }
 
 export function sortClosestToSize(icons: Icon[], val: number): Icon[] {

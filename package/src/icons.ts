@@ -42,6 +42,5 @@ export default {
 			"amazon.it",
 			"amazon.co.uk",
 		],
-		"mangafire.png": ["mangafire.png"]
 	} as Record<string, string[]>,
 }

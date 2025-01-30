@@ -129,7 +129,7 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 async function main(query: string, fast: boolean, as: "blob"): Promise<Blob>
 async function main(query: string, fast: boolean, as: "text"): Promise<string>
 async function main(query: string, fast: boolean, as: "blob" | "text") {
-	log.init("PATHS")
+	log.init()
 
 	const found = await createFaviconList(query)
 	const hasOneIcon = found.length === 1
