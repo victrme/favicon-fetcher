@@ -1,6 +1,6 @@
 {
 	"name": "@victr/favicon-fetcher",
-	"version": "3.0.3",
+	"version": "3.0.4",
 	"license": "MIT",
 	"exports": "./package/src/index.ts",
 	"imports": {
@@ -18,8 +18,6 @@
 			"exclude": ["no-sloppy-imports"]
 		}
 	},
-	"unstable": [
-		"sloppy-imports"
-	],
+	"unstable": ["sloppy-imports"],
 	"nodeModulesDir": "auto"
 }
