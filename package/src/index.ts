@@ -1,5 +1,5 @@
 import { fullpath, getIconFromList, log, sortClosestToSize } from "./helpers"
-import { fetchBody, fetchIcon, fetchManifest } from "./fetchers"
+import { fetchHtml, fetchIcon, fetchManifest } from "./fetchers"
 import { parseHead, parseManifest } from "./parsers"
 import STATIC_ICONS from "./icons"
 
@@ -192,7 +192,11 @@ async function createFaviconList(query: string): Promise<string[]> {
 	// Step 3: Put and sort all potential icon paths in a list
 
 	const icons: Icon[] = []
-	const html = await fetchBody(query)
+	const { html, redirected } = await fetchHtml(query)
+
+	if (redirected) {
+		query = redirected
+	}
 
 	if (html) {
 		const head = parseHead(html)
