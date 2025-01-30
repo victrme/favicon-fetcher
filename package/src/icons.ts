@@ -42,5 +42,9 @@ export default {
 			"amazon.it",
 			"amazon.co.uk",
 		],
+
+		/* Cloudflare Turnstile protected websites */
+		"mangafire.png": ["mangafire.to"],
+		"pixabay.png": ["pixabay.com"],
 	} as Record<string, string[]>,
 }
