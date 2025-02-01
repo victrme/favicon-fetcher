@@ -41,7 +41,7 @@ export default {
 	text: faviconAsText,
 	blob: faviconAsBlob,
 	fetch: faviconAsFetch,
-	debug: debugFaviconFetch,
+	debug: debugFavicon,
 	list: listAvailableFavicons,
 }
 
@@ -84,7 +84,7 @@ export async function listAvailableFavicons(query: string): Promise<string[]> {
  * @param query - Must add protocol in order to work (http:// or https://)
  * @returns A collection of data parsed by favicon fetcher
  */
-export async function debugFaviconFetch(query: string): Promise<Debug> {
+export async function debugFavicon(query: string): Promise<Debug> {
 	debugList = {}
 	await main(query, "text", { debug: true, fast: true })
 	return debugList
@@ -139,7 +139,7 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 		}
 
 		case "debug": {
-			const debug = await debugFaviconFetch(query)
+			const debug = await debugFavicon(query)
 			headers.set("Content-Type", "application/json")
 			return new Response(JSON.stringify(debug), { headers })
 		}
