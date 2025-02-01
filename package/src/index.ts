@@ -1,16 +1,32 @@
-import { fullpath, getIconFromList, log, sortClosestToSize } from "./helpers"
+import { fullpath, getIconFromList, sortClosestToSize } from "./helpers"
 import { fetchHtml, fetchIcon, fetchManifest } from "./fetchers"
 import { parseHead, parseManifest } from "./parsers"
 import STATIC_ICONS from "./icons"
 
-import type { Icon } from "./parsers.ts"
+import type { Head, Icon } from "./parsers.ts"
+
+interface Options {
+	log?: true
+	fast?: true
+	debug?: true
+}
+
+interface Debug {
+	html?: string
+	head?: Head
+	metas?: string[]
+	links?: string[]
+	manifest?: string[]
+	paths?: string[]
+}
 
 /**
  * Find the best favicon for the specified query.
  *
  * @param text - Receive a favicon as a string URL
  * @param blob - Receive a favicon as a blob (image)
- * @param fetch - Accepts a Request. /text/ returns text, /blob/ a blob
+ * @param fetch - Accepts a Request with /:type/:url as path
+ * @param debug - Returns a JSON of all data collected by favicon fetcher
  * @param list - Get all favicon URL found for the specified query
  *
  * @example
@@ -25,6 +41,7 @@ export default {
 	text: faviconAsText,
 	blob: faviconAsBlob,
 	fetch: faviconAsFetch,
+	debug: debugFaviconFetch,
 	list: listAvailableFavicons,
 }
 
@@ -36,7 +53,7 @@ export default {
  * @returns A favicon URL found for the query specified
  */
 export async function faviconAsText(query: string, fast?: true): Promise<string> {
-	return await main(query, !!fast, "text")
+	return await main(query, "text", { fast })
 }
 
 /**
@@ -47,7 +64,7 @@ export async function faviconAsText(query: string, fast?: true): Promise<string>
  * @returns A favicon found for the query specified
  */
 export async function faviconAsBlob(query: string, fast?: true): Promise<Blob> {
-	return await main(query, !!fast, "blob")
+	return await main(query, "blob", { fast })
 }
 
 /**
@@ -59,6 +76,18 @@ export async function faviconAsBlob(query: string, fast?: true): Promise<Blob> {
 export async function listAvailableFavicons(query: string): Promise<string[]> {
 	const list = await createFaviconList(query)
 	return list
+}
+
+/**
+ * Similar to list, it logs all steps favicon fetcher retrieved or parsed data
+ *
+ * @param query - Must add protocol in order to work (http:// or https://)
+ * @returns A collection of data parsed by favicon fetcher
+ */
+export async function debugFaviconFetch(query: string): Promise<Debug> {
+	debugList = {}
+	await main(query, "text", { debug: true, fast: true })
+	return debugList
 }
 
 /**
@@ -87,18 +116,19 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 	if (url.pathname.includes("/blob/")) type = "blob"
 	if (url.pathname.includes("/text/")) type = "text"
 	if (url.pathname.includes("/list/")) type = "list"
+	if (url.pathname.includes("/debug/")) type = "debug"
 
-	query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + 6)
+	query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + type.length + 2)
 
 	switch (type) {
 		case "blob": {
-			const blob = await main(query, false, "blob")
+			const blob = await main(query, "blob", {})
 			headers.set("Content-Type", blob.type)
 			return new Response(blob, { headers })
 		}
 
 		case "text": {
-			const text = await main(query, false, "text")
+			const text = await main(query, "text", {})
 			return new Response(text, { headers })
 		}
 
@@ -106,6 +136,12 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 			const list = await listAvailableFavicons(query)
 			headers.set("Content-Type", "application/json")
 			return new Response(JSON.stringify(list), { headers })
+		}
+
+		case "debug": {
+			const debug = await debugFaviconFetch(query)
+			headers.set("Content-Type", "application/json")
+			return new Response(JSON.stringify(debug), { headers })
 		}
 
 		case "": {
@@ -126,14 +162,15 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 //
 //
 
-async function main(query: string, fast: boolean, as: "blob"): Promise<Blob>
-async function main(query: string, fast: boolean, as: "text"): Promise<string>
-async function main(query: string, fast: boolean, as: "blob" | "text") {
-	log.init()
+async function main(query: string, as: "blob", options: Options): Promise<Blob>
+async function main(query: string, as: "text", options: Options): Promise<string>
+async function main(query: string, as: "blob" | "text", options: Options) {
+	canLog = !!options.log
+	canDebug = !!options.debug
 
 	const found = await createFaviconList(query)
 	const hasOneIcon = found.length === 1
-	const useFastMode = found.length > 0 && fast
+	const useFastMode = found.length > 0 && options.fast
 
 	if (hasOneIcon || useFastMode) {
 		if (as === "text") {
@@ -172,12 +209,8 @@ async function createFaviconList(query: string): Promise<string[]> {
 
 	try {
 		new URL(query)
-	} catch (_error) {
-		if (log.item.ERRORS) {
-			console.error(query)
-			console.error("Query is invalid")
-		}
-
+	} catch (_) {
+		toLog(query, "Query is invalid")
 		return [`${STATIC_ICONS.HOST}notfound.svg`]
 	}
 
@@ -232,9 +265,25 @@ async function createFaviconList(query: string): Promise<string[]> {
 
 	const fullpathIcons = icons.map((icon) => fullpath(icon.href, query))
 
-	if (log.item.PATHS) {
-		console.log(fullpathIcons)
-	}
+	toDebug("paths", fullpathIcons)
 
 	return fullpathIcons
+}
+
+// 	Helpers
+
+let canLog = false
+let canDebug = false
+let debugList: Debug = {}
+
+export function toDebug(key: keyof Debug, value: any) {
+	if (canDebug) {
+		debugList[key] = value
+	}
+}
+
+export function toLog(...logs: string[]) {
+	if (canLog) {
+		logs.forEach(console.error)
+	}
 }

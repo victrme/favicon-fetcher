@@ -1,27 +1,6 @@
 import STATIC_ICONS from "./icons"
+import { toLog } from "./index"
 import type { Icon } from "./parsers"
-
-type LogItems = keyof typeof logItems
-
-const logItems = {
-	HEAD: false,
-	METAS: false,
-	LINKS: false,
-	MANIFEST: false,
-	PATHS: false,
-	ERRORS: false,
-}
-
-export const log = {
-	init: initLogs,
-	item: logItems,
-}
-
-function initLogs(...items: LogItems[]): void {
-	for (const item of items) {
-		logItems[item] = true
-	}
-}
 
 export function fullpath(url: string, query: string): string {
 	if (url.startsWith("data:image/")) {
@@ -31,11 +10,7 @@ export function fullpath(url: string, query: string): string {
 	try {
 		new URL(query)
 	} catch (_error) {
-		if (log.item.ERRORS) {
-			console.log(query, url)
-			console.log("Cannot create a valid URL")
-		}
-
+		toLog(query, url, "Cannot create a valid URL")
 		return ""
 	}
 

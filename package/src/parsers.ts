@@ -1,4 +1,5 @@
-import { log, sizesToNumber } from "./helpers"
+import { toDebug, toLog } from "./index"
+import { sizesToNumber } from "./helpers"
 import type { Manifest } from "./fetchers"
 
 export interface Icon {
@@ -13,9 +14,7 @@ export interface Head {
 }
 
 export function parseManifest(manifest: Manifest): Icon[] {
-	if (log.item.MANIFEST) {
-		console.log(manifest)
-	}
+	toLog(JSON.stringify(manifest))
 
 	if (manifest.icons) {
 		return manifest.icons.map((icon) => ({
@@ -31,6 +30,9 @@ export function parseHead(html: string): Head {
 	const result: Head = { icons: [] }
 	const endHeadTag = html.indexOf("</head>")
 
+	const debugLinks: string[] = []
+	const debugMetas: string[] = []
+
 	if (endHeadTag > 0) {
 		html = html.slice(0, endHeadTag)
 	}
@@ -40,10 +42,6 @@ export function parseHead(html: string): Head {
 			.split("<script")
 			.map((str) => str.slice(str.indexOf("</script>") + 9))
 			.join()
-	}
-
-	if (log.item.HEAD) {
-		console.log(html)
 	}
 
 	const links = html.split("<link").map((str) => `<link ${str.slice(0, str.indexOf(">"))}>`)
@@ -59,23 +57,17 @@ export function parseHead(html: string): Head {
 		const name = sliceAttr(meta, 'name="', '"').toLocaleLowerCase()
 		const content = sliceAttr(meta, 'content="', '"')
 
-		if (log.item.METAS) {
-			console.log(meta)
-		}
-
 		if (name.includes("apple-touch-icon")) {
 			result.icons.push({ href: content, size: 100, touch: true })
 		}
+
+		debugMetas.push(meta)
 	}
 
 	for (const link of links) {
 		const rel = sliceAttr(link, 'rel="', '"').toLocaleLowerCase()
 		const href = sliceAttr(link, 'href="', '"')
 		const sizes = sliceAttr(link, 'sizes="', '"').toLocaleLowerCase()
-
-		if (log.item.LINKS) {
-			console.log(link)
-		}
 
 		if (rel.includes("manifest")) {
 			result.manifest = href
@@ -88,7 +80,14 @@ export function parseHead(html: string): Head {
 				touch: rel.includes("apple-touch") || rel.includes("fluid") || rel.includes("mask"),
 			})
 		}
+
+		debugLinks.push(link)
 	}
+
+	toDebug("html", html)
+	toDebug("metas", debugMetas)
+	toDebug("links", debugLinks)
+	toDebug("head", result)
 
 	return result
 }

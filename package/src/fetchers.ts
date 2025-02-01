@@ -1,4 +1,4 @@
-import { log } from './helpers.ts'
+import { toLog } from "./index.ts"
 
 interface fetchHtmlResponse {
 	html: string
@@ -13,16 +13,15 @@ export interface Manifest {
 }
 
 const headers: HeadersInit = {
-	'Cache-Control': 'max-age=0',
-	'Accept-Language': 'en-US;q=0.9,en;q=0.7',
-	'Sec-Ch-Ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-	'Sec-Ch-Ua-Mobile': '?0',
-	'Sec-Ch-Ua-Platform': '"macOS"',
-	'Sec-Fetch-Dest': 'document',
-	'Sec-Fetch-Site': 'none',
-	'Sec-Fetch-User': '?1',
-	'User-Agent':
-		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+	"Cache-Control": "max-age=0",
+	"Accept-Language": "en-US;q=0.9,en;q=0.7",
+	"Sec-Ch-Ua": '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+	"Sec-Ch-Ua-Mobile": "?0",
+	"Sec-Ch-Ua-Platform": '"macOS"',
+	"Sec-Fetch-Dest": "document",
+	"Sec-Fetch-Site": "none",
+	"Sec-Fetch-User": "?1",
+	"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
 }
 
 export async function fetchHtml(url: string): Promise<fetchHtmlResponse> {
@@ -36,14 +35,12 @@ export async function fetchHtml(url: string): Promise<fetchHtmlResponse> {
 		} else {
 			return { html }
 		}
-	} catch (_error) {
-		if (log.item.ERRORS) {
-			console.error(url, "Can't fetch HTML")
-		}
+	} catch (_) {
+		toLog(url, "Can't fetch HTML")
 	}
 
 	return {
-		html: '',
+		html: "",
 	}
 }
 
@@ -53,10 +50,8 @@ export async function fetchManifest(url: string): Promise<Manifest | undefined> 
 		const resp = await fetch(url, { headers, signal })
 		const json = await resp.json()
 		return json
-	} catch (_error) {
-		if (log.item.ERRORS) {
-			console.error(url, "Can't fetch manifest")
-		}
+	} catch (_) {
+		toLog(url, "Can't fetch manifest")
 	}
 }
 
@@ -69,9 +64,7 @@ export async function fetchIcon(url: string): Promise<Blob | undefined> {
 			const blob = await resp.blob()
 			return blob
 		}
-	} catch (_error) {
-		if (log.item.ERRORS) {
-			console.error(url, "Can't fetch favicon")
-		}
+	} catch (_) {
+		toLog(url, "Can't fetch favicon")
 	}
 }
