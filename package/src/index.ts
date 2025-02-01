@@ -3,7 +3,7 @@ import { fetchHtml, fetchIcon, fetchManifest } from "./fetchers"
 import { parseHead, parseManifest } from "./parsers"
 import STATIC_ICONS from "./icons"
 
-import type { Head, Icon } from "./parsers.ts"
+import type { Head, Icon } from "./parsers"
 
 interface Options {
 	log?: true

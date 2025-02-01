@@ -1,4 +1,4 @@
-import { toLog } from "./index.ts"
+import { toLog } from "./index"
 
 interface fetchHtmlResponse {
 	html: string
