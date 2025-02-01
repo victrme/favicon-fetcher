@@ -30,6 +30,11 @@ export function fullpath(url: string, query: string): string {
 		return `${origin}${pathname}${url}`
 	}
 
+	// Relative path and at root
+	if (!url.startsWith("/") && pathname === "/") {
+		return `${origin}/${url}`
+	}
+
 	return `${origin}${url}`
 }
 
