@@ -53,7 +53,11 @@ export function parseHead(html: string): Head {
 		return str.substring(start, end)
 	}
 
-	for (const meta of metas) {
+	for (let meta of metas) {
+		if (meta.includes("'")) {
+			meta = meta.replaceAll("'", '"')
+		}
+
 		const name = sliceAttr(meta, 'name="', '"').toLocaleLowerCase()
 		const content = sliceAttr(meta, 'content="', '"')
 
@@ -64,7 +68,11 @@ export function parseHead(html: string): Head {
 		debugMetas.push(meta)
 	}
 
-	for (const link of links) {
+	for (let link of links) {
+		if (link.includes("'")) {
+			link = link.replaceAll("'", '"')
+		}
+
 		const rel = sliceAttr(link, 'rel="', '"').toLocaleLowerCase()
 		const href = sliceAttr(link, 'href="', '"')
 		const sizes = sliceAttr(link, 'sizes="', '"').toLocaleLowerCase()

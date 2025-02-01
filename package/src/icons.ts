@@ -46,5 +46,7 @@ export default {
 		/* Cloudflare Turnstile protected websites */
 		"mangafire.png": ["mangafire.to"],
 		"pixabay.png": ["pixabay.com"],
+		"kraken.png": ["kraken.com"],
+		"coinmarketcap.png": ["coinmarketcap.com"],
 	} as Record<string, string[]>,
 }
