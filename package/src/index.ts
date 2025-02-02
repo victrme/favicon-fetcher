@@ -225,10 +225,16 @@ async function createFaviconList(query: string): Promise<string[]> {
 	// Step 3: Put and sort all potential icon paths in a list
 
 	const icons: Icon[] = []
-	const { html, redirected } = await fetchHtml(query)
+	const { html, redirected, captchaProtected } = await fetchHtml(query)
 
 	if (redirected) {
 		query = redirected
+	}
+
+	if (captchaProtected) {
+		const host = new URL(query).host
+		const ddg = `https://icons.duckduckgo.com/ip3/${host}.ico`
+		icons.push({ href: ddg, size: 64 })
 	}
 
 	if (html) {

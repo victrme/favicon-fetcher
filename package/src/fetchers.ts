@@ -1,8 +1,9 @@
 import { toLog } from "./index"
 
 interface fetchHtmlResponse {
-	html: string
+	html?: string
 	redirected?: string
+	captchaProtected?: true
 }
 
 export interface Manifest {
@@ -11,6 +12,8 @@ export interface Manifest {
 		sizes: string
 	}[]
 }
+
+const turnstileTitle = "<title>Just a moment...</title>"
 
 const headers: HeadersInit = {
 	"Cache-Control": "max-age=0",
@@ -25,23 +28,30 @@ const headers: HeadersInit = {
 }
 
 export async function fetchHtml(url: string): Promise<fetchHtmlResponse> {
+	const result: fetchHtmlResponse = {}
+
 	try {
 		const signal = AbortSignal.timeout(6000)
 		const resp = await fetch(url, { headers, signal })
 		const html = await resp.text()
 
-		if (resp.redirected) {
-			return { html, redirected: resp.url }
-		} else {
-			return { html }
+		result.html = html
+
+		const isCaptcha = html.includes(turnstileTitle)
+		const isRedirect = resp.redirected
+
+		if (isCaptcha) {
+			return { captchaProtected: true }
+		}
+
+		if (isRedirect) {
+			result.redirected = resp.url
 		}
 	} catch (_) {
 		toLog(url, "Can't fetch HTML")
 	}
 
-	return {
-		html: "",
-	}
+	return result
 }
 
 export async function fetchManifest(url: string): Promise<Manifest | undefined> {
