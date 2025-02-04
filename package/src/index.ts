@@ -1,23 +1,15 @@
-import { fullpath, getIconFromList, sortClosestToSize } from "./helpers"
+import { fullpath, getDebug, getIconFromList, initDebug, initLog, sortClosestToSize, toDebug, toLog } from "./helpers"
 import { fetchHtml, fetchIcon, fetchManifest } from "./fetchers"
 import { parseHead, parseManifest } from "./parsers"
 import STATIC_ICONS from "./icons"
 
-import type { Head, Icon } from "./parsers"
+import type { Icon } from "./parsers"
+import type { Debug } from "./helpers"
 
-interface Options {
+interface MainOptions {
 	log?: true
 	fast?: true
 	debug?: true
-}
-
-interface Debug {
-	html?: string
-	head?: Head
-	metas?: string[]
-	links?: string[]
-	manifest?: string[]
-	paths?: string[]
 }
 
 /**
@@ -85,9 +77,8 @@ export async function listAvailableFavicons(query: string): Promise<string[]> {
  * @returns A collection of data parsed by favicon fetcher
  */
 export async function debugFavicon(query: string): Promise<Debug> {
-	debugList = {}
 	await main(query, "text", { debug: true, fast: true })
-	return debugList
+	return getDebug()
 }
 
 /**
@@ -121,15 +112,15 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 	query = url.pathname.slice(url.pathname.indexOf(`/${type}/`) + type.length + 2)
 
 	switch (type) {
-		case "blob": {
-			const blob = await main(query, "blob", {})
-			headers.set("Content-Type", blob.type)
-			return new Response(blob, { headers })
+		case "text": {
+			const text = await faviconAsText(query)
+			return new Response(text, { headers })
 		}
 
-		case "text": {
-			const text = await main(query, "text", {})
-			return new Response(text, { headers })
+		case "blob": {
+			const blob = await faviconAsBlob(query)
+			headers.set("Content-Type", blob.type)
+			return new Response(blob, { headers })
 		}
 
 		case "list": {
@@ -145,8 +136,8 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 		}
 
 		case "": {
-			return new Response('No valid type: must be "blob", "text" or "list"', {
-				status: 400,
+			return new Response('Type must be "blob", "text", "list", or "debug"', {
+				status: 404,
 			})
 		}
 
@@ -162,11 +153,11 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 //
 //
 
-async function main(query: string, as: "blob", options: Options): Promise<Blob>
-async function main(query: string, as: "text", options: Options): Promise<string>
-async function main(query: string, as: "blob" | "text", options: Options) {
-	canLog = !!options.log
-	canDebug = !!options.debug
+async function main(query: string, as: "blob", options: MainOptions): Promise<Blob>
+async function main(query: string, as: "text", options: MainOptions): Promise<string>
+async function main(query: string, as: "blob" | "text", options: MainOptions) {
+	initLog(!!options.log)
+	initDebug(!!options.debug)
 
 	const found = await createFaviconList(query)
 	const hasOneIcon = found.length === 1
@@ -188,8 +179,6 @@ async function main(query: string, as: "blob" | "text", options: Options) {
 				throw new Error("Fast mode. Could not find valid favicon")
 			}
 		}
-
-		throw new Error("Static icon could not load. Wrong host url ?")
 	}
 
 	for (const url of found) {
@@ -231,12 +220,6 @@ async function createFaviconList(query: string): Promise<string[]> {
 		query = redirected
 	}
 
-	if (captchaProtected) {
-		const host = new URL(query).host
-		const ddg = `https://icons.duckduckgo.com/ip3/${host}.ico`
-		icons.push({ href: ddg, size: 64 })
-	}
-
 	if (html) {
 		const head = parseHead(html)
 		icons.push(...sortClosestToSize(head.icons, 144))
@@ -253,18 +236,14 @@ async function createFaviconList(query: string): Promise<string[]> {
 	}
 
 	if (icons.length === 0) {
-		icons.push(
-			{
-				href: `/favicon.ico`,
-				size: -1024,
-				touch: false,
-			},
-			{
-				href: `${STATIC_ICONS.HOST}notfound.svg`,
-				size: -2048,
-				touch: false,
-			},
-		)
+		const notfound = `${STATIC_ICONS.HOST}notfound.svg`
+		icons.push({ href: notfound, size: -2048 })
+	}
+
+	if (captchaProtected) {
+		const host = new URL(query).host
+		const ddg = `https://icons.duckduckgo.com/ip3/${host}.ico`
+		icons.push({ href: ddg, size: 64 })
 	}
 
 	// Step 4: Return list of href
@@ -274,22 +253,4 @@ async function createFaviconList(query: string): Promise<string[]> {
 	toDebug("paths", fullpathIcons)
 
 	return fullpathIcons
-}
-
-// 	Helpers
-
-let canLog = false
-let canDebug = false
-let debugList: Debug = {}
-
-export function toDebug(key: keyof Debug, value: any) {
-	if (canDebug) {
-		debugList[key] = value
-	}
-}
-
-export function toLog(...logs: string[]) {
-	if (canLog) {
-		logs.forEach(console.error)
-	}
 }

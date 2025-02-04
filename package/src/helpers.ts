@@ -1,6 +1,5 @@
 import STATIC_ICONS from "./icons"
-import { toLog } from "./index"
-import type { Icon } from "./parsers"
+import type { Head, Icon } from "./parsers"
 
 export function fullpath(url: string, query: string): string {
 	if (url.startsWith("data:image/")) {
@@ -60,4 +59,44 @@ export function getIconFromList(query: string): string | undefined {
 			if (query.includes(match)) return path
 		}
 	}
+}
+
+// 	Loggers & debuggers
+
+let canLog = false
+let canDebug = false
+let debugList: Debug = {}
+
+export function initLog(val: boolean): void {
+	canLog = val
+}
+
+export function initDebug(val: boolean): void {
+	debugList = {}
+	canDebug = val
+}
+
+export function toDebug(key: keyof Debug, value: any) {
+	if (canDebug) {
+		debugList[key] = value
+	}
+}
+
+export function toLog(...logs: string[]) {
+	if (canLog) {
+		logs.forEach(console.error)
+	}
+}
+
+export function getDebug(): Debug {
+	return debugList
+}
+
+export interface Debug {
+	html?: string
+	head?: Head
+	metas?: string[]
+	links?: string[]
+	manifest?: string[]
+	paths?: string[]
 }
