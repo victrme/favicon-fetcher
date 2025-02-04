@@ -25,6 +25,11 @@ export function fullpath(url: string, query: string): string {
 		return `${protocol}${url}`
 	}
 
+	// Relative path, not at root, pathname does not end with "/"
+	if (!url.startsWith("/") && !pathname.endsWith("/") && pathname !== "/") {
+		return `${origin}${pathname}/${url}`
+	}
+
 	// Relative path and not at root
 	if (!url.startsWith("/") && pathname !== "/") {
 		return `${origin}${pathname}${url}`
