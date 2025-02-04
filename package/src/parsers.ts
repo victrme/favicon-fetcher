@@ -1,5 +1,4 @@
-import { toDebug, toLog } from "./index"
-import { sizesToNumber } from "./helpers"
+import { sizesToNumber, toDebug, toLog } from "./helpers"
 import type { Manifest } from "./fetchers"
 
 export interface Icon {
