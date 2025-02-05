@@ -22,11 +22,16 @@ window.onload = async function () {
 
 ```ts
 interface Default {
-  text: (query: string, fast?: true) => Promise<string>
-  blob: (query: string, fast?: true) => Promise<Blob>
+  text: (query: string, options?: Options) => Promise<string>
+  blob: (query: string, options?: Options) => Promise<Blob>
   fetch: (request: Request) => Promise<Response>
   list: (query: string) => Promise<string[]>
   debug: (query: string) => Promise<Debug>
+}
+
+interface Options {
+	log?: true
+	check?: "all" | "best" | "none"
 }
 ```
 
