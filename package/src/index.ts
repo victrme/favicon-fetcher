@@ -1,4 +1,4 @@
-import { fullpath, getDebug, getIconFromList, initDebug, initLog, sortClosestToSize, toDebug, toLog } from "./helpers"
+import { getDebug, getIconFromList, initDebug, initLog, sortClosestToSize, toDebug, toLog } from "./helpers"
 import { fetchHtml, fetchIcon, fetchManifest } from "./fetchers"
 import { parseHead, parseManifest } from "./parsers"
 import STATIC_ICONS from "./icons"
@@ -8,8 +8,13 @@ import type { Debug } from "./helpers"
 
 interface MainOptions {
 	log?: true
-	fast?: true
-	debug?: true
+	check?: "all" | "best" | "none"
+}
+
+interface FaviconList {
+	found: string[]
+	fallbacks: string[]
+	notfound: string
 }
 
 /**
@@ -41,22 +46,26 @@ export default {
  * Specify a website, receive a favicon as a string URL
  *
  * @param query - Must add protocol in order to work (http:// or https://)
- * @param fast - Fast mode does not check if found URL is valid.
+ * @param options
+ * @param options.log - Adds console errors
+ * @param options.check - Either check validity for all found icons, best found icon, or none
  * @returns A favicon URL found for the query specified
  */
-export async function faviconAsText(query: string, fast?: true): Promise<string> {
-	return await main(query, "text", { fast })
+export async function faviconAsText(query: string, options?: MainOptions): Promise<string> {
+	return await main(query, "text", options ?? { check: "best" })
 }
 
 /**
  * Specify a website, receive a favicon as a blob (image)
  *
  * @param query - Must add protocol in order to work (http:// or https://)
- * @param fast - Fast mode only load first favicon found
+ * @param options
+ * @param options.log - Adds console errors
+ * @param options.check - Either check validity for all found icons, best found icon, or none
  * @returns A favicon found for the query specified
  */
-export async function faviconAsBlob(query: string, fast?: true): Promise<Blob> {
-	return await main(query, "blob", { fast })
+export async function faviconAsBlob(query: string, options?: MainOptions): Promise<Blob> {
+	return await main(query, "blob", options ?? { check: "best" })
 }
 
 /**
@@ -67,7 +76,7 @@ export async function faviconAsBlob(query: string, fast?: true): Promise<Blob> {
  */
 export async function listAvailableFavicons(query: string): Promise<string[]> {
 	const list = await createFaviconList(query)
-	return list
+	return [...list.found, ...list.fallbacks, list.notfound]
 }
 
 /**
@@ -77,7 +86,8 @@ export async function listAvailableFavicons(query: string): Promise<string[]> {
  * @returns A collection of data parsed by favicon fetcher
  */
 export async function debugFavicon(query: string): Promise<Debug> {
-	await main(query, "text", { debug: true, fast: true })
+	initDebug()
+	await main(query, "text", { check: "none" })
 	return getDebug()
 }
 
@@ -157,31 +167,31 @@ async function main(query: string, as: "blob", options: MainOptions): Promise<Bl
 async function main(query: string, as: "text", options: MainOptions): Promise<string>
 async function main(query: string, as: "blob" | "text", options: MainOptions) {
 	initLog(!!options.log)
-	initDebug(!!options.debug)
 
-	const found = await createFaviconList(query)
-	const hasOneIcon = found.length === 1
-	const useFastMode = found.length > 0 && options.fast
+	const list = await createFaviconList(query)
+	const isNone = options.check === "none"
+	const isBest = options.check === "best"
+	const isAll = options.check === "all"
 
-	if (hasOneIcon || useFastMode) {
+	// No check
+
+	if (isNone) {
 		if (as === "text") {
-			return found[0]
+			return list.found[0]
 		}
 
 		if (as === "blob") {
-			const blob = await fetchIcon(found[0])
-
-			if (blob) {
-				return blob
-			}
-
-			if (useFastMode) {
-				throw new Error("Fast mode. Could not find valid favicon")
-			}
+			const blob = await fetchIcon(list.found[0])
+			return blob ? blob : await fetchIcon(list.notfound)
 		}
 	}
 
-	for (const url of found) {
+	// Checks and fallbacks
+
+	const found = isBest ? [list.found[0]] : isAll ? list.found : []
+	const urls = found.concat(list.fallbacks, list.notfound)
+
+	for (const url of urls) {
 		const blob = await fetchIcon(url)
 
 		if (blob?.type.includes("image")) {
@@ -190,17 +200,25 @@ async function main(query: string, as: "blob" | "text", options: MainOptions) {
 		}
 	}
 
+	// Nothing found
+
 	throw new Error("No valid icon found in list")
 }
 
-async function createFaviconList(query: string): Promise<string[]> {
+async function createFaviconList(query: string): Promise<FaviconList> {
+	const result: FaviconList = {
+		found: [],
+		fallbacks: [],
+		notfound: `${STATIC_ICONS.HOST}notfound.svg`,
+	}
+
 	// Step 1: Return not found with bad query
 
 	try {
 		new URL(query)
 	} catch (_) {
 		toLog(query, "Query is invalid")
-		return [`${STATIC_ICONS.HOST}notfound.svg`]
+		return result
 	}
 
 	// Step 2: Is available from static list
@@ -208,13 +226,14 @@ async function createFaviconList(query: string): Promise<string[]> {
 	const staticIconUrl = getIconFromList(query)
 
 	if (staticIconUrl) {
-		return [`${STATIC_ICONS.HOST}${staticIconUrl}`]
+		result.found = [`${STATIC_ICONS.HOST}${staticIconUrl}`]
+		return result
 	}
 
 	// Step 3: Put and sort all potential icon paths in a list
 
 	const icons: Icon[] = []
-	const { html, redirected, captchaProtected } = await fetchHtml(query)
+	const { html, redirected } = await fetchHtml(query)
 
 	if (redirected) {
 		query = redirected
@@ -225,8 +244,8 @@ async function createFaviconList(query: string): Promise<string[]> {
 		icons.push(...sortClosestToSize(head.icons, 144))
 
 		if (head.manifest) {
-			const path = fullpath(head.manifest, query)
-			const manifest = await fetchManifest(path)
+			const path = generateFullPath(head.manifest, query)
+			const manifest = await fetchManifest(path[0])
 
 			if (manifest) {
 				const manifestIcons = parseManifest(manifest)
@@ -235,22 +254,67 @@ async function createFaviconList(query: string): Promise<string[]> {
 		}
 	}
 
-	if (icons.length === 0) {
-		const notfound = `${STATIC_ICONS.HOST}notfound.svg`
-		icons.push({ href: notfound, size: -2048 })
+	// 3. bis. Add fallbacks
+
+	const host = new URL(query).host
+	const faviconico = `https://${host}/favicon.ico`
+	const duckduckgo = `https://icons.duckduckgo.com/ip3/${host}.ico`
+
+	result.fallbacks.push(duckduckgo)
+	result.fallbacks.push(faviconico)
+
+	// Step 4: Add list of href
+
+	for (const icon of icons) {
+		result.found = result.found.concat(generateFullPath(icon.href, query))
 	}
 
-	if (captchaProtected) {
-		const host = new URL(query).host
-		const ddg = `https://icons.duckduckgo.com/ip3/${host}.ico`
-		icons.push({ href: ddg, size: 64 })
+	// Step 5: Return
+
+	toDebug("paths", result)
+
+	return result
+}
+
+function generateFullPath(href: string, query: string): string[] {
+	// a. Check for always valid paths
+
+	if (href.startsWith("data:image/")) {
+		return [href]
 	}
 
-	// Step 4: Return list of href
+	if (href.startsWith("http")) {
+		return [href]
+	}
 
-	const fullpathIcons = icons.map((icon) => fullpath(icon.href, query))
+	if (href.startsWith("//")) {
+		return [`https:${href}`]
+	}
 
-	toDebug("paths", fullpathIcons)
+	// b. Query sanitation
 
-	return fullpathIcons
+	try {
+		new URL(query)
+	} catch (_error) {
+		toLog(query, href, "Cannot create a valid URL")
+		return []
+	}
+
+	const url = new URL(query)
+	let pathname = url.pathname
+
+	if (pathname.endsWith("/")) {
+		pathname = pathname.slice(0, pathname.length - 2)
+	}
+
+	// c. Return root and/or relative paths
+
+	if (href.startsWith("/")) {
+		return [`${url.origin}${href}`]
+	}
+
+	return [
+		`${url.origin}/${href}`,
+		`${url.origin}${pathname}/${href}`,
+	]
 }

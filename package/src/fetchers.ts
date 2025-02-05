@@ -68,7 +68,7 @@ export async function fetchManifest(url: string): Promise<Manifest | undefined> 
 
 export async function fetchIcon(url: string): Promise<Blob | undefined> {
 	try {
-		const signal = AbortSignal.timeout(2500)
+		const signal = AbortSignal.timeout(2000)
 		const resp = await fetch(url, { signal, headers })
 
 		if (resp.status === 200) {

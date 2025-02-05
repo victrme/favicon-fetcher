@@ -1,47 +1,6 @@
 import STATIC_ICONS from "./icons"
 import type { Head, Icon } from "./parsers"
 
-export function fullpath(url: string, query: string): string {
-	if (url.startsWith("data:image/")) {
-		return url
-	}
-
-	try {
-		new URL(query)
-	} catch (_error) {
-		toLog(query, url, "Cannot create a valid URL")
-		return ""
-	}
-
-	const { protocol, origin, pathname } = new URL(query)
-
-	if (url.startsWith("http")) {
-		return url
-	}
-
-	// It means (https:)//
-	if (url.startsWith("//")) {
-		return `${protocol}${url}`
-	}
-
-	// Relative path, not at root, pathname does not end with "/"
-	if (!url.startsWith("/") && !pathname.endsWith("/") && pathname !== "/") {
-		return `${origin}${pathname}/${url}`
-	}
-
-	// Relative path and not at root
-	if (!url.startsWith("/") && pathname !== "/") {
-		return `${origin}${pathname}${url}`
-	}
-
-	// Relative path and at root
-	if (!url.startsWith("/") && pathname === "/") {
-		return `${origin}/${url}`
-	}
-
-	return `${origin}${url}`
-}
-
 export function sortClosestToSize(icons: Icon[], val: number): Icon[] {
 	const sorted = icons.sort((a, b) => Math.abs(a.size - val) - Math.abs(b.size - val))
 	return sorted
@@ -71,9 +30,9 @@ export function initLog(val: boolean): void {
 	canLog = val
 }
 
-export function initDebug(val: boolean): void {
+export function initDebug(): void {
 	debugList = {}
-	canDebug = val
+	canDebug = true
 }
 
 export function toDebug(key: keyof Debug, value: any) {
