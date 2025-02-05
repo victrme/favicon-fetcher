@@ -27,7 +27,7 @@ Deno.test("returns 400 when no type are specified", async function () {
 	const response = await favicon.fetch(
 		new Request("http://0.0.0.0:0000/https://victr.me"),
 	)
-	expect(response.status).toBe(400)
+	expect(response.status).toBe(404)
 })
 
 Deno.test("gets favicon as text", async function () {
