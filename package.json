@@ -13,6 +13,7 @@
 	},
 	"scripts": {
 		"demo": "npx http-server ./demo -c-1",
+		"bench": "npx http-server ./bench -c-1",
 		"dev": "npx wrangler dev ./package/src/index.ts",
 		"build": "tsup"
 	},
