@@ -8,9 +8,24 @@
 			content="Favicon fetcher finds sites favicons and fetches them fast"
 		/>
 
+		<link rel="shortcut icon" href="https://api.favicon.victr.me/blob/https://favicon.victr.me" type="image/x-icon">
+
 		<title>Favicon Fetcher: Find favicons and fetch them fast</title>
 	</head>
 	<body>
+		<h1>Benchmarking different favicon proviers</h1>
+
+		<p>
+			Let us see how <i>favicon-fetcher</i> fairs compared to other providers. This is a visual benchmark, beauty is in the eye of the
+			beholder !
+		</p>
+
+		<br>
+		<h2>Icon quality</h2>
+
+		<p>Here we compare 128x128 icons.</p>
+		<p><i>favicon-fetcher</i> tries its best to get a 144x144 icon to be usable almost anywhere.</p>
+
 		<table>
 			<thead>
 				<th>Favicon Fetcher</th>
@@ -18,157 +33,32 @@
 				<th>Google API</th>
 				<th>Duckduckgo API</th>
 			</thead>
-			<tbody>
-				<tr>
-					<td>
-						<img
-							src="https://api.favicon.victr.me/blob/https://wikipedia.org"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://icon.horse/icon/wikipedia.org"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://www.google.com/s2/favicons?domain=wikipedia.org&sz=128"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://icons.duckduckgo.com/ip3/wikipedia.org.ico"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<img
-							src="https://api.favicon.victr.me/blob/https://open.spotify.com"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://icon.horse/icon/open.spotify.com"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://www.google.com/s2/favicons?domain=open.spotify.com&sz=128"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://icons.duckduckgo.com/ip3/open.spotify.com.ico"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<img
-							src="https://api.favicon.victr.me/blob/https://icon.horse"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://icon.horse/icon/icon.horse"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://www.google.com/s2/favicons?domain=icon.horse&sz=128"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://icons.duckduckgo.com/ip3/icon.horse.ico"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<img
-							src="https://api.favicon.victr.me/blob/https://ko-fi.com"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://icon.horse/icon/ko-fi.com"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://www.google.com/s2/favicons?domain=ko-fi.com&sz=128"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-					<td>
-						<img
-							src="https://icons.duckduckgo.com/ip3/ko-fi.com.ico"
-							alt=""
-							width="128"
-							height="128"
-						/>
-					</td>
-				</tr>
-			</tbody>
+
+			<tbody id="quality-table-body"></tbody>
 		</table>
+
+		<br>
+		<h2>Most used websites</h2>
+
+		<p>Now, how many icons each providers can retrieve from the most used websites.</p>
+
+		<div id="most-used"></div>
 	</body>
+
+	<script src="./script.js"></script>
 </html>
 
 <style>
 	body {
 		font-family: monospace;
-		max-width: 580px;
-		margin: auto;
+		max-width: 600px;
+		margin: 5em auto;
+		font-size: 13px;
+		color: #333;
 	}
 
 	table {
-		margin-top: 5em;
+		margin-top: 2em;
 		border-collapse: collapse;
 	}
 
