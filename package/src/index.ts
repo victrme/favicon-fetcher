@@ -258,7 +258,7 @@ async function createFaviconList(query: string): Promise<FaviconList> {
 
 	const host = new URL(query).host
 	const faviconico = `https://${host}/favicon.ico`
-	const duckduckgo = `https://icons.duckduckgo.com/ip3/${host}.ico`
+	const duckduckgo = `https://www.google.com/s2/favicons?domain=${host}&sz=128`
 
 	result.fallbacks.push(duckduckgo)
 	result.fallbacks.push(faviconico)
@@ -313,8 +313,5 @@ function generateFullPath(href: string, query: string): string[] {
 		return [`${url.origin}${href}`]
 	}
 
-	return [
-		`${url.origin}/${href}`,
-		`${url.origin}${pathname}/${href}`,
-	]
+	return [`${url.origin}/${href}`, `${url.origin}${pathname}/${href}`]
 }
