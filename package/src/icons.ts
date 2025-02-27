@@ -44,6 +44,7 @@ export default {
 		],
 
 		/* Captcha protected websites */
+		"shopify.png": ["shopify.com"],
 		"mangafire.png": ["mangafire.to"],
 		"deepseek.png": ["deepseek.com"],
 		"coinmarketcap.png": ["coinmarketcap.com"],
