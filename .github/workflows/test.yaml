@@ -11,4 +11,6 @@ jobs:
               with:
                   deno-version: v2.x
 
-            - run: deno test --allow-net
+            - run: |
+                  deno install
+                  deno test --allow-net

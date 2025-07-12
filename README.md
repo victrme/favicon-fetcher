@@ -2,19 +2,19 @@
 
 Favicon fetcher finds sites favicons and fetches them fast
 
--   Test it here: https://favicon.victr.me
--   On JSR: https://jsr.io/@victr/favicon-fetcher
--   On NPM: https://www.npmjs.com/package/@victr/favicon-fetcher
+- Test it here: https://favicon.victr.me
+- On JSR: https://jsr.io/@victr/favicon-fetcher
+- On NPM: https://www.npmjs.com/package/@victr/favicon-fetcher
 
 ## Use
 
 ```ts
-import favicon from '@victr/favicon-fetcher'
+import favicon from "@victr/favicon-fetcher"
 
 window.onload = async function () {
-  const img = document.getElementById('some-id')
-  const url = await favicon.text('https://github.com')
-  img.src = url
+	const img = document.getElementById("some-id")
+	const url = await favicon.text("https://github.com")
+	img.src = url
 }
 ```
 
@@ -22,11 +22,11 @@ window.onload = async function () {
 
 ```ts
 interface Default {
-  text: (query: string, options?: Options) => Promise<string>
-  blob: (query: string, options?: Options) => Promise<Blob>
-  fetch: (request: Request) => Promise<Response>
-  list: (query: string) => Promise<string[]>
-  debug: (query: string) => Promise<Debug>
+	text: (query: string, options?: Options) => Promise<string>
+	blob: (query: string, options?: Options) => Promise<Blob>
+	fetch: (request: Request) => Promise<Response>
+	list: (query: string) => Promise<string[]>
+	debug: (query: string) => Promise<Debug>
 }
 
 interface Options {
