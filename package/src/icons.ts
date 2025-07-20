@@ -13,6 +13,7 @@ export default {
 		"teams.microsoft.png": ["teams.microsoft.com"],
 		"copilot.microsoft.svg": ["https://www.bing.com/images/create", "copilot.microsoft.com"],
 		"twitter.png": ["twitter.com"],
+		"music.google.png": ["music.youtube.com"],
 		"youtube.png": ["youtube.com"],
 		"instagram.png": ["instagram.com"],
 		"whatsapp.svg": ["whatsapp.com"],
@@ -32,7 +33,6 @@ export default {
 		"calendar.google.png": ["calendar.google.com"],
 		"gemini.google.svg": ["gemini.google.com"],
 		"drive.google.png": ["drive.google.com"],
-		"music.google.png": ["music.youtube.com"],
 		"icloud.mail.png": ["icloud.com/mail/"],
 		"amazon.svg": [
 			"amazon.com",
