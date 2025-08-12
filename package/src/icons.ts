@@ -17,6 +17,7 @@ export default {
 		"youtube.png": ["youtube.com"],
 		"instagram.png": ["instagram.com"],
 		"whatsapp.svg": ["whatsapp.com"],
+		"grok.svg": ["grok.com"],
 		"openai.svg": ["chatgpt.com", "openai.com"],
 		"discord.svg": ["discord.com"],
 		"leboncoin.svg": ["leboncoin.fr"],
