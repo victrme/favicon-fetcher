@@ -2,6 +2,7 @@
 .netlify
 .wrangler
 .DS_Store
+deno.lock
 node_modules
 dist
 example
