@@ -36,6 +36,7 @@ export default {
 		"gemini.google.svg": ["gemini.google.com"],
 		"drive.google.png": ["drive.google.com"],
 		"icloud.mail.png": ["icloud.com/mail/"],
+		"sheets.google.svg": ["docs.google.com/spreadsheets"],
 		"amazon.svg": [
 			"amazon.com",
 			"amazon.ca",
@@ -44,6 +45,7 @@ export default {
 			"amazon.it",
 			"amazon.co.uk",
 		],
+		"ambank.png": ["amonline.com"],
 
 		/* Captcha protected websites */
 		"shopify.png": ["shopify.com"],
