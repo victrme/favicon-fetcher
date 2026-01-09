@@ -28,6 +28,8 @@ export default {
 		"mail.google.png": ["mail.google.com", "gmail.com"],
 		"keep.google.ico": ["keep.google.com"],
 		"docs.google.png": ["docs.google.com"],
+		"sheets.google.svg": ["docs.google.com/spreadsheets"],
+		"slides.google.svg": ["docs.google.com/presentation"],
 		"maps.google.png": ["maps.google.com", "google.com/maps"],
 		"contacts.google.png": ["contacts.google.com"],
 		"messages.google.png": ["messages.google.com"],
@@ -36,7 +38,6 @@ export default {
 		"gemini.google.svg": ["gemini.google.com"],
 		"drive.google.png": ["drive.google.com"],
 		"icloud.mail.png": ["icloud.com/mail/"],
-		"sheets.google.svg": ["docs.google.com/spreadsheets"],
 		"amazon.svg": [
 			"amazon.com",
 			"amazon.ca",
