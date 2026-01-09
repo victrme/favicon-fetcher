@@ -47,6 +47,7 @@ export default {
 			"amazon.co.uk",
 		],
 		"ambank.png": ["amonline.com"],
+		"postman.png": ["postman.co"],
 
 		/* Captcha protected websites */
 		"shopify.png": ["shopify.com"],
