@@ -111,8 +111,8 @@ export async function faviconAsFetch(request: Request): Promise<Response> {
 		"Cache-Control": "public, max-age=604800, immutable",
 	})
 
-	let query: string = ""
-	let type: string = ""
+	let query = ""
+	let type = ""
 
 	if (url.pathname.includes("/blob/")) type = "blob"
 	if (url.pathname.includes("/text/")) type = "text"

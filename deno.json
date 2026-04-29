@@ -6,7 +6,7 @@
 	"exports": "./package/src/index.ts",
 	"nodeModulesDir": "auto",
 	"imports": {
-		"@std/expect": "jsr:@std/expect@^1.0.17"
+		"@std/expect": "jsr:@std/expect@^1.0.19"
 	},
 	"fmt": {
 		"singleQuote": false,
@@ -18,14 +18,37 @@
 	"lint": {
 		"rules": {
 			"tags": [
-				"recommended"
+			  "recommended"
+			],
+			"include": [
+				"default-param-last",
+				"eqeqeq",
+				"no-eval",
+				"no-external-import",
+				"no-implicit-declare-namespace-export",
+				"no-import-prefix",
+				"no-inferrable-types",
+				"no-non-null-asserted-optional-chain",
+				"no-self-compare",
+				"no-slow-types",
+				"no-sparse-arrays",
+				"no-sync-fn-in-async-fn",
+				"no-throw-literal",
+				"no-useless-rename",
+				"single-var-declarator",
+				"prefer-ascii",
+				"camelcase",
+				"no-non-null-assertion"
 			],
 			"exclude": [
-				"no-sloppy-imports"
+			  "no-sloppy-imports"
 			]
 		}
 	},
 	"unstable": [
 		"sloppy-imports"
+	],
+	"exclude": [
+	  ".wrangler"
 	]
 }
