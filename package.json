@@ -9,17 +9,20 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/victrme/favicon-fetcher"
+		"url": "git+https://github.com/victrme/favicon-fetcher.git"
 	},
 	"scripts": {
-		"demo": "npx http-server ./demo -c-1",
+		"test": "deno test --allow-net --allow-read",
+		"demo": "deno run --allow-net --allow-read jsr:@std/http/file-server demo/",
 		"dev": "npx wrangler dev ./package/src/index.ts",
-		"build": "tsup"
+		"publish": "tsdown && npm publish --dry-run",
+		"build": "tsdown"
 	},
 	"devDependencies": {
-		"tsup": "^8.5.1",
-		"typescript": "^5.9.3"
+		"tsdown": "^0.21.10",
+		"typescript": "^6.0.3"
 	},
+	"type": "module",
 	"files": [
 		"/dist"
 	],
@@ -30,14 +33,5 @@
 				"default": "./dist/index.js"
 			}
 		}
-	},
-	"tsup": {
-		"entry": [
-			"package/src/index.ts"
-		],
-		"format": "esm",
-		"dts": true,
-		"clean": true
-	},
-	"type": "module"
+	}
 }
