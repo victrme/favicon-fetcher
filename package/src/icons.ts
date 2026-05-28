@@ -52,6 +52,7 @@ export default {
 		],
 		"ambank.png": ["amonline.com"],
 		"postman.png": ["postman.co"],
+		"home.edx.org": ["https://cdn.brandfetch.io/idSP67A-c2/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1772657198157"],
 
 		/* Captcha protected websites */
 		"shopify.png": ["shopify.com"],
