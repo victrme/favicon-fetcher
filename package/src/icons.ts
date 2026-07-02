@@ -54,6 +54,7 @@ export default {
 		"postman.png": ["postman.co"],
 		"home.edx.org": ["https://cdn.brandfetch.io/idSP67A-c2/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1772657198157"],
 		"kagi.png": ["kagi.com"],
+		"tiktok.png": ["tiktok.com"],
 
 		/* Captcha protected websites */
 		"shopify.png": ["shopify.com"],
