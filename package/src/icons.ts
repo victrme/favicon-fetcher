@@ -36,6 +36,8 @@ export default {
 		"google/chat.png": ["chat.google.com"],
 		"google/tasks.png": ["tasks.google.com"],
 		"google/photos.png": ["photos.google.com"],
+		"google/news.png": ["news.google.com"],
+		"google/sheets.svg": ["sheets.google.com"],
 		"messages.google.png": ["messages.google.com"],
 		"podcasts.google.png": ["podcasts.google.com"],
 		"google/calendar.png": ["calendar.google.com"],
