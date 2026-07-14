@@ -42,6 +42,7 @@ export default {
 		"google.messages.png": ["messages.google.com"],
 		"google.podcasts.png": ["podcasts.google.com"],
 		"google.gemini.svg": ["gemini.google.com"],
+		"google.news.png": ["news.google.com"],
 		"icloud.mail.png": ["icloud.com/mail/"],
 		"amazon.svg": [
 			"amazon.com",
