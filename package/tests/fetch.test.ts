@@ -1,4 +1,4 @@
-import { expect } from "jsr:@std/expect"
+import { expect } from "@std/expect"
 
 import STATIC_ICONS from "../src/icons.ts"
 import favicon from "../src/index.ts"
