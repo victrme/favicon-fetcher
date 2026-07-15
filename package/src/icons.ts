@@ -35,6 +35,8 @@ export default {
 		"google.maps.png": ["maps.google.com", "google.com/maps"],
 		"google.meet.png": ["meet.google.com"],
 		"google.chat.png": ["chat.google.com"],
+		"google.sites.png": ["sites.google.com"],
+		"google.tasks.png": ["tasks.google.com"],
 		"google.photos.png": ["photos.google.com"],
 		"google.voice.png": ["voice.google.com"],
 		"google.calendar.png": ["calendar.google.com"],
